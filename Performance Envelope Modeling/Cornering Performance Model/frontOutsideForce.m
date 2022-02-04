@@ -1,6 +1,6 @@
-function [ffo] = frontOutsideForce()
+function [ffo] = frontOutsideForce(cornering_parameters)
 
-load("cornering_parameters");
+[mass, Kf, Kr, L, b, rho, hf, hr, hg, hl, Cl, A, t, g, v] = corner_decode(cornering_parameters);
 
 syms a 
 

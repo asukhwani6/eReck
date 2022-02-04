@@ -1,6 +1,6 @@
-function [fri] = rearInsideForce()
-load("cornering_parameters");
+function [fri] = rearInsideForce(cornering_parameters)
 
+[mass, Kf, Kr, L, b, rho, hf, hr, hg, hl, Cl, A, t, g, v] = corner_decode(cornering_parameters);
 syms a
 
 LLTr = a.*(mass.*g./t).*((hl.*Kr)./(Kf+Kr)) + a.*(mass.*g.*(b)./L).*hr;

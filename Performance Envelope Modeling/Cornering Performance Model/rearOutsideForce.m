@@ -1,5 +1,6 @@
-function [fro] = rearOutsideForce()
-load("cornering_parameters");
+function [fro] = rearOutsideForce(cornering_parameters)
+
+[mass, Kf, Kr, L, b, rho, hf, hr, hg, hl, Cl, A, t, g, v] = corner_decode(cornering_parameters);
 
 syms a
 

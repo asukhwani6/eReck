@@ -1,10 +1,10 @@
 
-function [Fx,Ax] = powerLimited(v)
+function [Fx,Ax] = powerLimited(v,parameters)
 
 %Author: Marc Maquiling,maquilingm@gatech.edu,646-745-4078
 %Date: 12/28/21
 
-load("vehicle");
+[mass, L, h, b, m_u,Tm, N, Im, Ip, r, rho, Cd, A, Crr, eta] = param_decode(parameters);
 
 D = 0.5.*rho.*Cd.*v.^2.*A; %drag force, parameters taken from Aero presentation
 

@@ -1,5 +1,5 @@
-function [ffi] = frontInsideForce()
-load("cornering_parameters");
+function [ffi] = frontInsideForce(cornering_parameters)
+[mass, Kf, Kr, L, b, rho, hf, hr, hg, hl, Cl, A, t, g, v] = corner_decode(cornering_parameters);
 
 syms a
 
