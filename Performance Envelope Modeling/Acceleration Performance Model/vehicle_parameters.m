@@ -2,7 +2,7 @@
 
 g = 9.81; %acceleration due to gravity
 
-mass = 173; %[kg]
+mass = 222; %[kg]
 
 L = 1.53; %wheelbase
 
@@ -28,25 +28,23 @@ rho = 1.225; %air density
 
 Cd = 1.3; %drag coefficient
 
-Cl = 2.48; % Lift coefficient
+Cl = 2.6; % Lift coefficient
 
-A = 1.334; %frontal area
+A = 1; %frontal (reference) area
 
 Crr = 0.028; %rolling resistance coefficient
 
-eta = 0.8; %powertrain efficiency 
+eta = 0.85; %powertrain efficiency 
 
-Kf = 113; %Front roll stiffness
+Kf = 113 * 57.3; %Front roll stiffness
 
-%Kr = 113; %Rear roll stiffness
-
-Kr = 256;
+Kr = 113 * 57.3; %Rear roll stiffness
 
 hf = 0.058; %Front roll center height
 
 hr = 0.071; %Rear roll center height 
 
-hg = 0.215; %CG height
+hg = 0.1778; %CG height
 
 hl = hg - (((hr-hf)/L)*(L-b) + hf); %Distance from CG to roll axis 
 
