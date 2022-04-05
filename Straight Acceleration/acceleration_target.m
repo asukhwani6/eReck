@@ -1,8 +1,8 @@
 %parameters: entry velocity, final_velocity | output: time, distance
 
-function [time, traveled_dis, exit_v] = acceleration_target(entry_v, target_v,parameters, allowed_distance)
+function [Time, traveled_dis, V] = acceleration_target(entry_v, target_v,parameters, allowed_distance)
 
-h = 0.1;%Time step size
+h = 0.05;%Time step size
 
 V = [entry_v];
 Time = [0];

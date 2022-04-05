@@ -1,4 +1,4 @@
-function [time,  exit_v, braking_distance] = speed_transient(straight_parameters, cornering_parameters,track_length,track_radius, optim_number, entry_vel)
+function [time,  v, braking_distance] = speed_transient(straight_parameters, cornering_parameters,track_length,track_radius, optim_number, entry_vel)
 
 threshold = 0.1;
 braking_a = -1.5 * 9.81; %max braking deceleration [m/s^2]
@@ -18,12 +18,16 @@ for i = 1:optim_number %always sweep from braking entire distance
     
     braking_distance = track_length - d(i);
     
-    [accel_time, temp_v] = acceleration(entry_vel, d(i),straight_parameters);
-    [brake_time, exit_v] = brake_calculator(braking_a,braking_distance, temp_v);
+    [accel_time, accel_v] = acceleration(entry_vel, d(i),straight_parameters);
+    [brake_time, exit_v] = brake_calculator(braking_a,braking_distance, accel_v(end));
     %fprintf("End Velocity %3f\n",final_v);
-    if abs(allowed_v - exit_v)<threshold || (exit_v > allowed_v)
+    if abs(allowed_v(end) - exit_v(end))<threshold || (exit_v(end) > allowed_v(end))
         break %end optimization
     end
 end
+
+v = [accel_v; exit_v'];
+brake_time = brake_time + accel_time(end);
+
 %fprintf("End Velocity %3f\n",final_v);
-time = accel_time + brake_time;
+time = [accel_time,  brake_time];

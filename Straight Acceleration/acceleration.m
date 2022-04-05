@@ -1,6 +1,6 @@
 %parameters: entry velocity, distance | output: time, exit velocity
 
-function [time, exit_v] = acceleration(entry_v, dist,parameters)
+function [Time, V] = acceleration(entry_v, dist,parameters)
 
 h = 0.1;%Time step size
 

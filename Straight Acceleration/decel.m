@@ -1,5 +1,5 @@
 % Calculates time and exit_v for constant speed then decelerates to target
-function [brake_time,  exit_v, braking_distance] = decel(allowed_v,track_length, optim_number, entry_vel)
+function [time,  v, braking_distance] = decel(allowed_v,track_length, optim_number, entry_vel)
 
 threshold = 0.1;
 braking_a = -1.5 * 9.81; %max braking deceleration [m/s^2]
@@ -14,9 +14,9 @@ end
 for i = 1:optim_number %always sweep from braking entire distance
     
     braking_distance = track_length - d(i);
-    [brake_time, exit_v] = brake_calculator(braking_a,braking_distance, entry_vel);
+    [time, v] = brake_calculator(braking_a,braking_distance, entry_vel);
 
-    if abs(allowed_v - exit_v)<threshold || (exit_v > allowed_v)
+    if abs(allowed_v - v(end))<threshold || (v(end) > allowed_v)
         break %end optimization
     end
     
