@@ -2,7 +2,7 @@
 
 function [Time, V] = acceleration(entry_v, dist,parameters)
 
-h = 0.1;%Time step size
+h = 0.01;%Time step size
 
 V = [entry_v];
 Time = [0];

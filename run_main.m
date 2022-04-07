@@ -1,17 +1,37 @@
 track = "2021.csv";
 vehicle_parameters;
 
-optim_number = 1000; %Optimization discretization for braking
+optim_number = 250; %Optimization discretization for braking
+vary_length = 10;
 
-%parametrize any vehicle parameters in this loop:
-for i = 1:1
+cl_range = linspace(0,4,vary_length);
+cd_range = linspace(1,4,vary_length);
+[X,Y] = meshgrid(cl_range,cd_range);
+
+%parametrize any cl/cd parameters in this loop:
+for i = 1:vary_length
+    for j = 1:vary_length
+        
+    fprintf("Running Cl, Cd: %.3f %.3f\n",cl_range(i),cd_range(j));    
+    cornering_parameters(11) = cl_range(i); %coefficient of lift
+    straight_parameters(12) = cd_range(j); %Coeffcient of drag     
     
-    straight_parameters(1) = straight_parameters(1) - 10;
-    cornering_parameters(1) = cornering_parameters(1) - 10;
+    [time(j,i),  v, t, ~] = runLapSim(track, straight_parameters, cornering_parameters,optim_number);
+    %fprintf("For vehicle weight of %.1fkg, the lap time is: %.3fs\n",straight_parameters(1), time(i));
     
-    [time(i),  v, t, locations] = runLapSim(track, straight_parameters, cornering_parameters,optim_number);
-    fprintf("For vehicle weight of %.1fkg, the lap time is: %.3fs\n",straight_parameters(1), time(i));
+
+    end
 end
+%% plot 
+figure
+
+test = smoothdata(time,'gaussian',10);
+surf(X,Y,test);
+xlabel('C_L','FontSize',14)
+ylabel('C_d','FontSize',14)
+zlabel('Time [s]','FontSize',14)
+view(45,30)
+%plot(w,time,'.');
 
 %% Data plot
 
@@ -29,7 +49,6 @@ end
 
 %% overlay
 
-
 load('6_19_21_data.mat');
 motor_speed = S.motor_speed;
 vehicle_speed_mph = motor_speed;
@@ -38,8 +57,8 @@ vehicle_speed_mph(:,2) = -motor_speed(:,2).*0.225.*0.000284091.*pi.*60;
 mask = (vehicle_speed_mph(:,1) >= 4987) & (vehicle_speed_mph(:,1) <= 5058);
 time_new = vehicle_speed_mph(mask,1) - min(vehicle_speed_mph(mask,1));
 speed_new = vehicle_speed_mph(mask,2)./2.237; %Convert to [m/s]
-
-subplot(2,1,1)
+figure
+%subplot(2,1,1)
 hold on
 
 data_distance = cumtrapz(time_new, speed_new);
@@ -54,7 +73,8 @@ xlabel('Time [s]');
 xlim([0 t(end)])
 ylabel('Velocity [m/s]');
 
-subplot(2,1,2)
+%% CumTrapz not working
+%subplot(2,1,2)
 hold on
 
 plot(data_distance,speed_new);

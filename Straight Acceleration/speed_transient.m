@@ -21,8 +21,10 @@ for i = 1:optim_number %always sweep from braking entire distance
     [accel_time, accel_v] = acceleration(entry_vel, d(i),straight_parameters);
     [brake_time, exit_v] = brake_calculator(braking_a,braking_distance, accel_v(end));
     %fprintf("End Velocity %3f\n",final_v);
-    if abs(allowed_v(end) - exit_v(end))<threshold || (exit_v(end) > allowed_v(end))
-        break %end optimization
+    if (i ~=optim_number)
+        if (abs(allowed_v(end) - exit_v(end))<threshold || (exit_v(end) > allowed_v(end)))
+            break %end optimization
+        end
     end
 end
 

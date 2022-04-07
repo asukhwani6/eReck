@@ -54,4 +54,4 @@ t = 1.215; %track
 
 straight_parameters = [mass L h b m_u Tm N Im Ip r rho Cd A Crr eta];
 
-cornering_parameters = [mass, Kf, Kr, L, b, rho, hf, hr, hg, hl, Cl, A, t, g v];
+cornering_parameters = [mass, Kf, Kr, L, b, rho, hf, hr, hg, hl, Cl, A, t, g, v];
