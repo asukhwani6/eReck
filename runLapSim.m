@@ -2,14 +2,14 @@
 function [totalT,  v, t,locations] = runLapSim(track,sp,cp,ep)
 
 track_1 = importdata(track);
-t_elements = flip(track_1.data(:,1));
-t_radius = flip(track_1.data(:,2));
-t_length = flip(track_1.data(:,3));
+t_elements =track_1.data(:,1);
+t_radius = track_1.data(:,2);
+t_length = track_1.data(:,3);
 
 
 %fprintf("Total track length: %.3fm\n",sum(t_length));
 
-vel_temp = 17.43; %initial speed
+vel_temp = 15.5088; %initial speed
 totalT= 0; %initial time 
 locations = [];
 v = vel_temp; %velocity vector
@@ -20,13 +20,16 @@ for ct = 1:length(t_elements)
     
     if (t_elements(ct) == 1)&&(ct < length(t_elements))
         
-        %fprintf("Element %d: straight with braking\n",ct);  
+        fprintf("Element %d: straight with braking\n",ct);  
         [time_v, vel_v, ~] = speed_transient(sp, cp, t_length(ct), t_radius(ct+1),ep,vel_temp);
         
+    elseif ct == length(t_elements)&&(t_elements(ct) == 0) %Added for edge case where ct+1 does not exist for SS cornering check
+        
+        [time_v,vel_v] = cornering(t_length(ct),vel_temp);
         
     elseif (t_elements(ct) == 0)&&(t_elements(ct+1) == 1)&&(ct < length(t_elements)) %steady state cornering
         
-        %fprintf("Element %d: steady state corner\n", ct); 
+        fprintf("Element %d: steady state corner\n", ct); 
         [time_v,vel_v] = cornering(t_length(ct),vel_temp);
              
     elseif (t_elements(ct) == 0)&&(t_elements(ct+1) == 0)&&(ct < length(t_elements))
@@ -45,11 +48,11 @@ for ct = 1:length(t_elements)
         t_dis = t_length(ct) - td; %remaining arc distance for SS corner
         
         if (t_radius(ct+1)>=t_radius(ct)) % Situation 1: V_2 > V1
-            %fprintf("Element %d: succesive corners: slow to fast\n", ct);
+            fprintf("Element %d: succesive corners: slow to fast\n", ct);
             % Next corner is faster so drive at allowed_v for entire arc
             [time_v,vel_v] = cornering(t_length(ct),vel_temp);                
         else % Situation 2: V2 < V1
-            %fprintf("Element %d: succesive corners: fast to slow\n", ct);
+            fprintf("Element %d: succesive corners: fast to slow\n", ct);
             %calculate the amount of distance required to brake to v_allowed
             v_n = cornerFunc(cp,t_radius(ct+1),10); %Allowed velocity of next corner
             [t_b, v_b, braking_distance] = decel(v_n, t_dis,ep,vel_temp); %calculate distance, time req and final velocity  

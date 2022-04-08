@@ -1,7 +1,13 @@
-track = "2021.csv";
+track = "david.csv";
+vehicle_parameters;
+optim_number = 250; %Optimization discretization for braking
+
+ [time,  v, t, ~] = runLapSim(track, straight_parameters, cornering_parameters,optim_number);
+%%
+
 vehicle_parameters;
 
-optim_number = 250; %Optimization discretization for braking
+
 vary_length = 10;
 
 cl_range = linspace(0,4,vary_length);
@@ -51,12 +57,12 @@ end
 
 load('6_19_21_data.mat');
 motor_speed = S.motor_speed;
-vehicle_speed_mph = motor_speed;
-vehicle_speed_mph(:,2) = -motor_speed(:,2).*0.225.*0.000284091.*pi.*60;
+vehicle_speed = motor_speed;
+vehicle_speed(:,2) = -motor_speed(:,2).*0.004792579784;
 
-mask = (vehicle_speed_mph(:,1) >= 4987) & (vehicle_speed_mph(:,1) <= 5058);
-time_new = vehicle_speed_mph(mask,1) - min(vehicle_speed_mph(mask,1));
-speed_new = vehicle_speed_mph(mask,2)./2.237; %Convert to [m/s]
+mask = (vehicle_speed(:,1) >= 4987) & (vehicle_speed(:,1) <= 5058);
+time_new = vehicle_speed(mask,1) - min(vehicle_speed(mask,1));
+speed_new = vehicle_speed(mask,2);
 figure
 %subplot(2,1,1)
 hold on
@@ -64,8 +70,11 @@ hold on
 data_distance = cumtrapz(time_new, speed_new);
 sim_distance = cumtrapz(t(2:end),v(2:end));
 
+t = t(32:end) - t(32);
+v = v(32:end);
+
 plot(time_new,speed_new);
-plot(t(2:end),v(2:end),'.-');
+plot(t,v,'.-');
 legend('Raw Data', 'Sim Data')
 grid on
 box on
