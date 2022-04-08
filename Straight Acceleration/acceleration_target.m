@@ -2,7 +2,7 @@
 
 function [Time, traveled_dis, V] = acceleration_target(entry_v, target_v,parameters, allowed_distance)
 
-h = 0.05;%Time step size
+h = 0.001;%Time step size
 
 V = [entry_v];
 Time = [0];
@@ -43,8 +43,5 @@ while (vi < target_v) && (traveled_dis < allowed_distance)
     traveled_dis = cumtrapz(Time,V);
     traveled_dis = traveled_dis(end);
 end
-
-time = t;
-exit_v = V(end);
 
 end

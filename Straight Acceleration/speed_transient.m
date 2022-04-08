@@ -1,6 +1,6 @@
 function [time,  v, braking_distance] = speed_transient(straight_parameters, cornering_parameters,track_length,track_radius, optim_number, entry_vel)
 
-threshold = 0.1;
+threshold = 0.01;
 braking_a = -1.5 * 9.81; %max braking deceleration [m/s^2]
 
 if (track_length> 40)

@@ -34,7 +34,7 @@ A = 1; %frontal (reference) area
 
 Crr = 0.028; %rolling resistance coefficient
 
-eta = 0.85; %powertrain efficiency 
+eta = 0.80; %powertrain efficiency 
 
 Kf = 113 * 57.3; %Front roll stiffness
 

@@ -3,7 +3,7 @@ function [time, v] = brake_calculator(braking_accel, dist, entry_v)
 
 
 exit_v = sqrt(entry_v^2 + 2*braking_accel * dist);
-time = (exit_v - entry_v)/(braking_accel);
+time = abs((exit_v - entry_v)/(braking_accel));
 
 
 if ~isreal(exit_v)

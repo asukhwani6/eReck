@@ -1,8 +1,11 @@
 track = "david.csv";
 vehicle_parameters;
-optim_number = 250; %Optimization discretization for braking
-
- [time,  v, t, ~] = runLapSim(track, straight_parameters, cornering_parameters,optim_number);
+optim_number = 500; %Optimization discretization for braking
+vel_start = 15;
+ [time,  v, t, locations] = runLapSim(vel_start,track, straight_parameters, cornering_parameters,optim_number);
+ 
+ %TODO: better corner accel
+ %TODO: slip angle selection = wheelbase/radius
 %%
 
 vehicle_parameters;
@@ -22,7 +25,7 @@ for i = 1:vary_length
     cornering_parameters(11) = cl_range(i); %coefficient of lift
     straight_parameters(12) = cd_range(j); %Coeffcient of drag     
     
-    [time(j,i),  v, t, ~] = runLapSim(track, straight_parameters, cornering_parameters,optim_number);
+    [time(j,i),  v, t, ~] = runLapSim(vel_start,track, straight_parameters, cornering_parameters,optim_number);
     %fprintf("For vehicle weight of %.1fkg, the lap time is: %.3fs\n",straight_parameters(1), time(i));
     
 
@@ -43,10 +46,10 @@ view(45,30)
 
 figure
 hold on
-plot(t(2:end),v(2:end),'.-');
+plot(t,v,'.-');
 
 % This is for debugging
-for i = 1:length(locations)
+for i = 1:length(locations)-1
     
     penis = sprintf('Element %d',i);
     xline(t(locations(i)),'-',penis);
@@ -70,27 +73,56 @@ hold on
 data_distance = cumtrapz(time_new, speed_new);
 sim_distance = cumtrapz(t(2:end),v(2:end));
 
-t = t(32:end) - t(32);
-v = v(32:end);
-
 plot(time_new,speed_new);
 plot(t,v,'.-');
-legend('Raw Data', 'Sim Data')
+
 grid on
 box on
 xlabel('Time [s]');
 xlim([0 t(end)])
 ylabel('Velocity [m/s]');
 
+for i = 1:length(locations)
+    
+    penis = sprintf('Element %d',i);
+    xline(t(locations(i)),'-',penis);
+    
+end
+legend('Raw Data', 'Sim Data')
+
 %% CumTrapz not working
 %subplot(2,1,2)
+figure
 hold on
 
 plot(data_distance,speed_new);
-plot(sim_distance,v(2:end),'.-');
+plot(sim_distance,v(1:end-1),'.-');
 legend('Raw Data', 'Sim Data')
 grid on
 box on
 xlabel('Distance [m]');
 %xlim([0 t(end)])
 ylabel('Velocity [m/s]');
+
+%% Power Limited Test
+
+for i = 1:100
+    [~,a(i)] = powerLimited(i,straight_parameters);
+end
+
+figure
+plot(a)
+
+%% Tests
+
+cock = 1000;
+
+dist = linspace(1,20,cock);
+
+for i = 1:cock
+    [~,v] = acceleration(0,dist(i),straight_parameters);
+    v_max(i) = v(end);
+end
+
+figure
+plot(dist,v_max,'.')
