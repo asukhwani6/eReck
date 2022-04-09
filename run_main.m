@@ -1,7 +1,7 @@
 track = "david.csv";
 vehicle_parameters;
 optim_number = 500; %Optimization discretization for braking
-vel_start = 15;
+
  [time,  v, t, locations] = runLapSim(vel_start,track, straight_parameters, cornering_parameters,optim_number);
  
  %TODO: better corner accel
@@ -9,11 +9,12 @@ vel_start = 15;
 %%
 
 vehicle_parameters;
-
-
+track = "david.csv";
+vel_start = 15; %Starting velocity
+optim_number = 500; %Optimization discretization for braking
 vary_length = 10;
 
-cl_range = linspace(0,4,vary_length);
+cl_range = linspace(2,4,vary_length);
 cd_range = linspace(1,4,vary_length);
 [X,Y] = meshgrid(cl_range,cd_range);
 
@@ -35,7 +36,7 @@ end
 figure
 
 test = smoothdata(time,'gaussian',10);
-surf(X,Y,test);
+surf(X,Y,time);
 xlabel('C_L','FontSize',14)
 ylabel('C_d','FontSize',14)
 zlabel('Time [s]','FontSize',14)

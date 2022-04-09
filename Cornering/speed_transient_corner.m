@@ -20,7 +20,7 @@ for i = 1:optim_number %always sweep from braking entire distance
     
     [accel_time, traveled_dis, accel_v] = acceleration_target(entry_vel, allowed_v,straight_parameters, d(i));
        
-    [brake_time, exit_v] = brake_calculator(braking_a,braking_distance(i), accel_v(end));
+    [brake_time, exit_v] = brake_calculator(braking_a,braking_distance, accel_v(end));
     
     
     if (i ~=optim_number)

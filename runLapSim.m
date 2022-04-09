@@ -20,16 +20,16 @@ for ct = 1:length(t_elements)
     
     if (t_elements(ct) == 1)&&(ct < length(t_elements))
         
-        fprintf("Element %d: straight %.3fm with braking\n",ct,t_length(ct));  
+        %fprintf("Element %d: straight %.3fm with braking\n",ct,t_length(ct));  
         [time_v, vel_v, ~] = speed_transient(sp, cp, t_length(ct), t_radius(ct+1),ep,vel_temp);
         
     elseif ct == length(t_elements)&&(t_elements(ct) == 0) %Added for edge case where ct+1 does not exist for SS cornering check
-        fprintf("Element %d: final corner\n",ct);  
+        %fprintf("Element %d: final corner\n",ct);  
         [time_v,vel_v] = cornering(t_length(ct),vel_temp);
         
     elseif (t_elements(ct) == 0)&&(t_elements(ct+1) == 1)&&(ct < length(t_elements)) %steady state cornering
         
-        fprintf("Element %d: steady state corner, arc length: %.3fm\n", ct,t_length(ct)); 
+        %fprintf("Element %d: steady state corner, arc length: %.3fm\n", ct,t_length(ct)); 
         [time_v,vel_v] = cornering(t_length(ct),vel_temp);
              
     elseif (t_elements(ct) == 0)&&(t_elements(ct+1) == 0)&&(ct < length(t_elements))
@@ -42,7 +42,7 @@ for ct = 1:length(t_elements)
         vel_v_a = allowed_v; 
         cornered = 0;
         
-        fprintf("Element %d: Current Radius: %.3f, Next Radius: %.3f, Curr V_al: %.3f Next V_al: %.3f\n",ct, t_radius(ct),t_radius(ct+1),allowed_v,cornerFunc(cp,t_radius(ct+1),10));
+        %fprintf("Element %d: Current Radius: %.3f, Next Radius: %.3f, Curr V_al: %.3f Next V_al: %.3f\n",ct, t_radius(ct),t_radius(ct+1),allowed_v,cornerFunc(cp,t_radius(ct+1),10));
         
         if (vel_temp < allowed_v) %entry speed below allowed speed 
      
@@ -93,9 +93,9 @@ for ct = 1:length(t_elements)
     locations = [locations length(t)];
     t = [t, time_v];
     vel_temp = v(end);
-    fprintf("End Velocity %.3f total time: %.3f\n",v(end), t(end));
+    %fprintf("End Velocity %.3f total time: %.3f\n",v(end), t(end));
 end
-fprintf("Done with loop\n");
+%fprintf("Done with loop\n");
 totalT = totalT + time_v(end);
 
 end
