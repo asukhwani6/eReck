@@ -34,8 +34,13 @@ for ct = 1:length(t_elements)
              
     elseif (t_elements(ct) == 0)&&(t_elements(ct+1) == 0)&&(ct < length(t_elements))
        
-        allowed_v = cornerFunc(cp,t_radius(ct),10);
-        av_next = cornerFunc(cp, t_radius(ct+1),10);
+        
+        sa = rad2deg(sp(2)/t_radius(ct)); %slip angle selection of this corner
+        sa_n = rad2deg(sp(2)/t_radius(ct+1)); %slip angle selection of next corner
+        
+
+        allowed_v = cornerFunc(cp,t_radius(ct),sa);
+        av_next = cornerFunc(cp, t_radius(ct+1),sa_n);
         
         time_v_a = 0;
         t_dis = t_length(ct);
@@ -51,7 +56,7 @@ for ct = 1:length(t_elements)
                 [time_v, vel_v] = speed_transient_corner(sp, t_length(ct), av_next, allowed_v, ep,vel_temp); %Treat as transient with steady state hold
                 cornered = 1;          
             else
-                [time_v_a, td, vel_v_a] = acceleration_target(vel_temp, allowed_v, sp, t_length(ct)); %TODO
+                [time_v_a, vel_v_a, td] = acceleration(vel_temp, allowed_v, t_length(ct), sp, 0); %TODO
                 % calculate time it took to accelerate up to speed and amount of the arc length used for that
                 vel_temp = vel_v_a(end);
                 
@@ -85,7 +90,7 @@ for ct = 1:length(t_elements)
         end
         
     else 
-        [time_v,vel_v] = acceleration(vel_temp, t_length(ct),sp); %final straight     
+        [time_v,vel_v] = acceleration(vel_temp,0, t_length(ct),sp,1); %final straight     
     end
     
     v = [v; vel_v];
@@ -93,9 +98,11 @@ for ct = 1:length(t_elements)
     locations = [locations length(t)];
     t = [t, time_v];
     vel_temp = v(end);
-    %fprintf("End Velocity %.3f total time: %.3f\n",v(end), t(end));
+    fprintf("End Velocity %.3f total time: %.3f\n",v(end), t(end));
 end
-%fprintf("Done with loop\n");
-totalT = totalT + time_v(end);
+fprintf("Done with loop\n");
+totalT = time_v(end);
 
 end
+
+

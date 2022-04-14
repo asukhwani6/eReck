@@ -1,6 +1,6 @@
 %parameters: entry velocity, distance | output: time, exit velocity
-
-function [Time, V] = acceleration(entry_v, dist,parameters)
+% type = 1 for distance check, otherwise distance and velocity check
+function [Time, V, traveled_dis] = acceleration(entry_v, target_v, dist,parameters, type)
 
 h = 0.01;%Time step size
 
@@ -9,23 +9,27 @@ Time = [0];
 traveled_dis = 0;
 t = 0;
 vi = entry_v;
+Ai = 0;
+
+check = 1;
 
 %Midpoint method for loop
-while traveled_dis < dist
+while check
     
     t = t + h; % iterate time
     
     %Determines which regime to iterate
-    [Ft,~] = tractionLimited(vi,parameters);
+    
+    [Ft,Ai] = tractionLimited(vi,Ai,parameters);
     [Fp,~] = powerLimited(vi,parameters);
     
     if Ft <= Fp
         
-        [~,Ai] = tractionLimited(vi,parameters);      
+        [~,Ai] = tractionLimited(vi,Ai,parameters);      
         midV = vi + (h./2).*Ai;       
-        [~,midslope] = tractionLimited(midV,parameters);
+        [~,midslope] = tractionLimited(midV,Ai,parameters);
         vo = vi + h.*midslope;
-        Ax = midslope;      
+        Ai = midslope;      
        
     elseif Fp < Ft
         
@@ -33,7 +37,7 @@ while traveled_dis < dist
         midV = vi + (h./2).*Ai; 
         [~,midslope] = powerLimited(midV,parameters);
         vo = vi + h.*midslope;
-        Ax = midslope;            
+        Ai = midslope;            
     end
     
     %storing values calculated by midpoint method
@@ -42,10 +46,16 @@ while traveled_dis < dist
     Time = [Time t]; %Increments total time
     traveled_dis = cumtrapz(Time,V);
     traveled_dis = traveled_dis(end);
+    
+    %Condition check
+    if (type == 1)
+        check = (traveled_dis < dist);
+    else
+        check = (vi < target_v) && (traveled_dis < dist);
+    
+    end       
 end
 
-time = t;
-exit_v = V(end);
 
 end
 

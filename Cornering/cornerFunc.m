@@ -26,7 +26,7 @@ G = -4.*bStiff.*(cFront.^2+cRear.^2);
 H = radius.*lF.*(2 + 4.*bStiff.*sF + 2.*bStiff.*lR.*radius) + radius.*lR.*(2 + 4.*bStiff.*sR + 2.*bStiff.*lR.*radius) + mass./slipAngle;
 I = 2.*aStiff.*mass.*g-2.*bStiff.*(sR.^2+sF.^2);
 
-f = @(x) G.*x.^2 + H.*x + I;
+f = @(x) G.*x.^2 + H.*x + I; %Lateral force( lateral accel)
 [latAccel,~,~] = Bisection(f,1,30,0.1,100);
 latAccel_g = latAccel./g;
 

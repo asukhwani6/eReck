@@ -1,12 +1,12 @@
 track = "david.csv";
 vehicle_parameters;
 optim_number = 500; %Optimization discretization for braking
-
+vel_start = 15; %Starting velocity
  [time,  v, t, locations] = runLapSim(vel_start,track, straight_parameters, cornering_parameters,optim_number);
  
- %TODO: better corner accel
- %TODO: slip angle selection = wheelbase/radius
-%%
+%TODO: lateral tire drag in corner accels
+ 
+%% Cl/Cd sweep
 
 vehicle_parameters;
 track = "david.csv";
@@ -32,15 +32,18 @@ for i = 1:vary_length
 
     end
 end
-%% plot 
+
 figure
 
 test = smoothdata(time,'gaussian',10);
-surf(X,Y,time);
+contourf(X,Y,time);
+colorbar
+title('Cl/Cd Sweep of Nevada Endurance')
 xlabel('C_L','FontSize',14)
 ylabel('C_d','FontSize',14)
-zlabel('Time [s]','FontSize',14)
-view(45,30)
+
+%zlabel('Time [s]','FontSize',14)
+%view(45,30)
 %plot(w,time,'.');
 
 %% Data plot
@@ -67,36 +70,14 @@ vehicle_speed(:,2) = -motor_speed(:,2).*0.004792579784;
 mask = (vehicle_speed(:,1) >= 4987) & (vehicle_speed(:,1) <= 5058);
 time_new = vehicle_speed(mask,1) - min(vehicle_speed(mask,1));
 speed_new = vehicle_speed(mask,2);
-figure
-%subplot(2,1,1)
-hold on
 
 data_distance = cumtrapz(time_new, speed_new);
 sim_distance = cumtrapz(t(2:end),v(2:end));
 
-plot(time_new,speed_new);
-plot(t,v,'.-');
-
-grid on
-box on
-xlabel('Time [s]');
-xlim([0 t(end)])
-ylabel('Velocity [m/s]');
-
-for i = 1:length(locations)
-    
-    penis = sprintf('Element %d',i);
-    xline(t(locations(i)),'-',penis);
-    
-end
-legend('Raw Data', 'Sim Data')
-
-%% CumTrapz not working
-%subplot(2,1,2)
 figure
 hold on
 
-plot(data_distance,speed_new);
+plot(data_distance,smoothdata(speed_new));
 plot(sim_distance,v(1:end-1),'.-');
 legend('Raw Data', 'Sim Data')
 grid on
@@ -104,26 +85,52 @@ box on
 xlabel('Distance [m]');
 %xlim([0 t(end)])
 ylabel('Velocity [m/s]');
+xlim([0 max(sim_distance)])
 
-%% Power Limited Test
+
+%% Accel Script Tests
+vehicle_parameters;
+
+cock = 100;
+
+dist = linspace(1,75,cock);
 
 for i = 1:100
-    [~,a(i)] = powerLimited(i,straight_parameters);
-end
-
-figure
-plot(a)
-
-%% Tests
-
-cock = 1000;
-
-dist = linspace(1,20,cock);
-
-for i = 1:cock
-    [~,v] = acceleration(0,dist(i),straight_parameters);
+    %coeff = FYcalc(dist(i),520.9687);
+    %penis(i) = coeff(1);
+    %cock(i) = coeff(2);
+    [~,v] = acceleration(0,dist(i),straight_parameters,cock);
     v_max(i) = v(end);
 end
 
 figure
-plot(dist,v_max,'.')
+hold on
+box on
+plot(dist,v_max);
+xlabel('Distance [m]');
+ylabel('Max Speed [m]');
+
+%% Brake script test
+
+vehicle_parameters;
+
+dist = linspace(1,75,cock);
+
+[t,v] = braking(30,100,straight_parameters);
+[tt,vv] = brake_calculator(-1.5*9.81,30,30);
+figure
+hold on
+box on
+plot(dist,v_max);
+plot(dist,v_maxt);
+plot(t,v)
+plot(tt,vv)
+legend('ODE','-1.5g braking');
+xlabel('Time [s]');
+ylabel('Max Speed [m]');
+%legend('Constant \mu','Weight Transfer');
+%plot(dist,cock,'.');
+%yyaxis right
+%plot(dist,penis,'.')
+%legend('1st Coeff','2nd Coeff');
+

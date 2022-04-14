@@ -3,7 +3,6 @@
 function [time,  v] = speed_transient_corner(straight_parameters,track_length, av_next, allowed_v, optim_number, entry_vel)
 
 threshold = 0.01;
-braking_a = -1.5 * 9.81; %max braking deceleration [m/s^2]
 
 if (track_length > 40) %For effciency purposes
     d = linspace(track_length/3, track_length,optim_number);
@@ -18,9 +17,9 @@ for i = 1:optim_number %always sweep from braking entire distance
     
     braking_distance = track_length - d(i);
     
-    [accel_time, traveled_dis, accel_v] = acceleration_target(entry_vel, allowed_v,straight_parameters, d(i));
-       
-    [brake_time, exit_v] = brake_calculator(braking_a,braking_distance, accel_v(end));
+    [accel_time, accel_v, traveled_dis] = acceleration(entry_vel, allowed_v,d(i), straight_parameters,0);
+    [brake_time, exit_v, ~] = braking(accel_v(end),braking_distance,straight_parameters);   
+    %[brake_time, exit_v] = brake_calculator(braking_a,braking_distance, accel_v(end));
     
     
     if (i ~=optim_number)
@@ -38,13 +37,13 @@ if d_temp < track_length
     t_c = linspace(0,t_c,30);
     v_c = ones(30,1) .* accel_v(end);
     
-    v = [accel_v; v_c; exit_v'];
+    v = [accel_v; v_c; exit_v];
     t_c = t_c + accel_time(end);
     brake_time = brake_time + t_c(end);
     
     time = [accel_time, t_c, brake_time];
 else
-    v = [accel_v; exit_v'];
+    v = [accel_v; exit_v];
     brake_time = brake_time + accel_time(end);
     time = [accel_time, brake_time];
 end

@@ -1,5 +1,5 @@
 %Straight Parameters decode
-function[mass, L, h, b, m_u,Tm, N, Im, Ip, r, rho, Cd, A, Crr, eta] = param_decode(parameters)
+function[mass, L, h, b, m_u,Tm, N, Im, Ip, r, rho, Cd, A, Crr, eta g] = param_decode(parameters)
 
 mass = parameters(1); %[kg]
 
@@ -33,5 +33,6 @@ Crr = parameters(14); %rolling resistance coefficient
 
 eta = parameters(15); %powertrain efficiency 
 
+g = parameters(16);
 end
 
