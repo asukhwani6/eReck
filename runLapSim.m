@@ -73,13 +73,14 @@ for ct = 1:length(t_elements)
             if (t_radius(ct+1)>=t_radius(ct)) % Situation 1: V_2 > V1
                 [time_v,vel_v] = cornering(t_dis,vel_temp); % Next corner is faster so drive at allowed_v for entire arc
             else % Situation 2: V2 < V1
-                [t_b, v_b, braking_distance] = decel(av_next, t_dis,ep,vel_temp); %calculate distance, time req and final velocity
-                t_dis = t_dis - braking_distance; %adjusted cornering distance
+                %[t_b, v_b, braking_distance] = decel(av_next, t_dis,ep,vel_temp, sp); %calculate distance, time req and final velocity
+                [t_b, v_b, braking_distance] = braking_temp(vel_temp, t_dis, sp, av_next);
+                t_dis = t_dis - braking_distance %adjusted cornering distance
                 [t_c,v_c] = cornering(t_dis,vel_temp);
                 
                 t_b = t_b + t_c(end);
                 time_v = [t_c, t_b];
-                vel_v = [v_c; v_b'];
+                vel_v = [v_c; v_b];
             end
             
             if (time_v_a(end)~=0) %only add acceleration if we have to speed up for the corner

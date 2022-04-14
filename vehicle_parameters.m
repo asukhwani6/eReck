@@ -6,8 +6,6 @@ mass = 222; %[kg]
 
 L = 1.53; %wheelbase
 
-h = 0.17; %CG height
-
 b = 0.732; %distance from CG to rear axle
 
 %mu = 1.8; %longitudinal tire coefficient of friction
@@ -52,6 +50,6 @@ v = 9.69;
 
 t = 1.215; %track
 
-straight_parameters = [mass L h b m_u Tm N Im Ip r rho Cd A Crr eta g];
+straight_parameters = [mass L hg b m_u Tm N Im Ip r rho Cd A Crr eta g];
 
 cornering_parameters = [mass, Kf, Kr, L, b, rho, hf, hr, hg, hl, Cl, A, t, g, v];
