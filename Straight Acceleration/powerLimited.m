@@ -10,13 +10,16 @@ D = 0.5.*rho.*Cd.*v.^2.*A; %drag force, parameters taken from Aero presentation
 
 Rr =  Crr.* mass.*9.81; %Rolling resistance
 
-adjTm = Tm -2.*10.^-5.*(v).^5+0.0014.*v.^4-0.0372.*v.^3+0.4109.*v.^2-1.7775.*v; %Torque(V)
+adjTm = 160 -2.*10.^-5.*(v).^5+0.0014.*v.^4-0.0372.*v.^3+0.4109.*v.^2-1.7775.*v; %Torque(V)
+if adjTm < Tm
+    Tm = adjTm;
+end
 
 %^This function comes from the Emrax 208 torque vs RPM data. Data points
 %from the spec sheet were put into an Excel sheet and then I fitted a curve
 %to them. 
 
-netF = ((adjTm.*N.*eta)./r) - D - Rr; %add tire drag = cornering force * 4 * sin(10)
+netF = ((Tm.*N.*eta)./r) - D - Rr; %add tire drag = cornering force * 4 * sin(10)
 
 if netF < 0
     
@@ -24,7 +27,7 @@ if netF < 0
     Ax = 0;
 else
     
-    Fx = (adjTm.*N.*eta)./r;
+    Fx = (Tm.*N.*eta)./r;
     
     effectiveMass = (mass + ((Im.*N.^2+Ip)./r.^2));
     

@@ -2,7 +2,7 @@ track = "david.csv";
 vehicle_parameters;
 optim_number = 500; %Optimization discretization for braking
 vel_start = 15; %Starting velocity
- [time,  v, t, locations] = runLapSim(vel_start,track, straight_parameters, cornering_parameters,optim_number);
+[v, t, locations] = runLapSimOptimized(vel_start,track, straight_parameters, cornering_parameters,optim_number);
  
 %TODO: lateral tire drag in corner accels
  
@@ -67,7 +67,7 @@ motor_speed = S.motor_speed;
 vehicle_speed = motor_speed;
 vehicle_speed(:,2) = -motor_speed(:,2).*0.004792579784;
 
-mask = (vehicle_speed(:,1) >= 4987) & (vehicle_speed(:,1) <= 5058);
+mask = (vehicle_speed(:,1) >= 5061.98) & (vehicle_speed(:,1) <= 5132.97);
 time_new = vehicle_speed(mask,1) - min(vehicle_speed(mask,1));
 speed_new = vehicle_speed(mask,2);
 
@@ -77,15 +77,16 @@ sim_distance = cumtrapz(t(2:end),v(2:end));
 figure
 hold on
 
-plot(data_distance,smoothdata(speed_new));
-plot(sim_distance,v(1:end-1),'.-');
+plot(data_distance,speed_new);
+plot(sim_distance*1.028,v(1:end-1),'.-');
 legend('Raw Data', 'Sim Data')
 grid on
 box on
 xlabel('Distance [m]');
 %xlim([0 t(end)])
 ylabel('Velocity [m/s]');
-xlim([0 max(sim_distance)])
+xlim([0 max(sim_distance*1.028)])
+ylim([0 30])
 
 
 %% Accel Script Tests
@@ -117,14 +118,16 @@ vehicle_parameters;
 dist = linspace(1,75,cock);
 
 [t,v] = braking(30,100,straight_parameters);
-[tt,vv] = brake_calculator(-1.5*9.81,30,30);
+% [tt,vv] = brake_calculator(-1.5*9.81,30,30);
 figure
 hold on
 box on
-plot(dist,v_max);
-plot(dist,v_maxt);
+% plot(dist,v_max);
+% plot(dist,v_maxt);
 plot(t,v)
-plot(tt,vv)
+a = diff(v)/diff(t)
+
+% plot(tt,vv)
 legend('ODE','-1.5g braking');
 xlabel('Time [s]');
 ylabel('Max Speed [m]');

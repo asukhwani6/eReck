@@ -32,5 +32,8 @@ latAccel_g = latAccel./g;
 
 v_allowed = sqrt(latAccel.*radius);
 
+if radius == 0
+    v_allowed = realmax;
+end
 end
 

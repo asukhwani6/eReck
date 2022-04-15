@@ -12,7 +12,7 @@ b = 0.732; %distance from CG to rear axle
 
 m_u = 1.5;
 
-Tm = 140; %motor torque
+Tm = 120; %motor torque
 
 N = 4.44; %gear ratio
 
@@ -50,6 +50,6 @@ v = 9.69;
 
 t = 1.215; %track
 
-straight_parameters = [mass L hg b m_u Tm N Im Ip r rho Cd A Crr eta g];
+straight_parameters = [mass L hg b m_u Tm N Im Ip r rho Cd A Crr eta g Cl];
 
 cornering_parameters = [mass, Kf, Kr, L, b, rho, hf, hr, hg, hl, Cl, A, t, g, v];
