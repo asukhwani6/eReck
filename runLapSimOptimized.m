@@ -22,19 +22,19 @@ for ct = 1:length(t_length)
     sa = rad2deg(L/t_radius(ct));
     velLimit = cornerFunc(Parameters,t_radius(ct),sa);
 
-    if (ct ~= length(t_radius))
+    % If last element, velocity limit of next corner is defined as the maximum 64 bit floating point number
+    % Else velocity limit is calculated based on next track element
+    if (ct == length(t_radius))
+        velLimitNextCorner = realmax;
+    else 
         saNextCorner = rad2deg(L/t_radius(ct+1));
         velLimitNextCorner = cornerFunc(Parameters,t_radius(ct+1),saNextCorner);
-    else % if last element, velocity limit of next corner is defined as the maximum 64 bit floating point number
-        velLimitNextCorner = realmax;
     end
 
     if (t_radius(ct) == 0) %straight
-
         [time_v, vel_v, ~] = speed_transient(Parameters, t_length(ct),optim_number,vel_0,velLimitNextCorner);
 
     elseif (t_radius(ct) ~= 0) %corner
-
         [time_v, vel_v] = speed_transient_corner(Parameters, t_length(ct), velLimitNextCorner, velLimit, ep,vel_0);
     end
 
@@ -47,7 +47,7 @@ for ct = 1:length(t_length)
     % input velocity of the next event
 
     if vel_v(end) > velLimitNextCorner
-        % loop through track elements in reverse order to correct discrepancy
+        % loop through track elements in reverse order to correct discrepancies
         [v, t, eventIndices] = recurEvents(vel_v(end), ct, v, t, eventIndices, Parameters, ep, optim_number, t_radius, t_length);
     end
 

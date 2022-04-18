@@ -37,6 +37,7 @@ Parameters.Cl = 2.62; % Lift coefficient
 % LOW DRAG CONFIGURATION
 % Param.Cd = 0.85;
 % Param.Cl = 1.62;
+
 Parameters.A = 1; %frontal (reference) area
 
 Parameters.Crr = 0.028; %rolling resistance coefficient R25B 

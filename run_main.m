@@ -1,7 +1,7 @@
 %% Lap Sim
-track = "david.csv";
-% HT05_vehicle_parameters;
-HT06_vehicle_parameters;
+track = "FSAE2021NevadaEndurance.csv";
+HT05_vehicle_parameters;
+% HT06_vehicle_parameters;
 optim_number = 500; %Optimization discretization for braking
 vel_start = 13; %Starting velocity
 
@@ -22,10 +22,10 @@ speed_new = vehicle_speed(mask,2);
 data_distance = cumtrapz(time_new, speed_new);
 sim_distance = cumtrapz(t(2:end),v(2:end));
 
-figure
+% figure
 hold on
 
-plot(data_distance,speed_new);
+% plot(data_distance,speed_new);
 plot(sim_distance*1.028,v(1:end-1),'.-');
 legend('Raw Data', 'Sim Data')
 grid on
@@ -38,19 +38,17 @@ ylim([0 30])
 
 
 %% Accel Script Tests
-vehicle_parameters;
+HT05_vehicle_parameters;
 
 num = 100;
 
 dist = linspace(1,75,num);
 
 for i = 1:100
-
-    [~,v] = acceleration(0,dist(i),straight_parameters,num);
+    [~,v] = acceleration(0,realmax,dist(i),Parameters,num);
     v_max(i) = v(end);
 end
 
-figure
 hold on
 box on
 plot(dist,v_max);

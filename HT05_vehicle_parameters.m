@@ -15,9 +15,13 @@ Parameters.b = 0.732; %distance from CG to rear axle
 
 Parameters.m_u = 1.5;
 
-Parameters.Tm = 120; %motor torque
+Parameters.TmRear = 120; % Rear motor torque
 
-Parameters.N = 4.44; %gear ratio
+Parameters.TmFront = 0; % Front motor torque
+
+Parameters.nRear = 4.44; % Rear gear ratio
+
+Parameters.nFront = 4.44; % Front gear ratio
 
 Parameters.Im = 0.0441 + 0.02; %motor + motor output shaft rotational inertia 
 
@@ -27,14 +31,13 @@ Parameters.r = 0.203; %tire radius
 
 Parameters.rho = 1.225; %air density
 
-% HIGH DRAG CONFIGURATION
 Parameters.Cd = 1.30; %drag coefficient
 Parameters.Cl = 2.48; % Lift coefficient
 
-% LOW DRAG CONFIGURATION
-% Param.Cd = 0.85;
-% Param.Cl = 1.62;
 Parameters.A = 1; %frontal (reference) area
+
+Parameters.hcp = 0.3974; % CP height
+Parameters.bcp = 0.6604; % Distance from CP to rear axle
 
 Parameters.Crr = 0.028; %rolling resistance coefficient R25B 
 

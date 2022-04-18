@@ -1,4 +1,4 @@
-function [Fx,Ax] = tractionLimited(v,Ax,Parameters)
+function [FxRear,FxFront] = tractionLimited(FzFront,FzRear,Parameters)
 
 %Author: Marc Maquiling,maquilingm@gatech.edu,646-745-4078
 %Date: 12/28/21
@@ -17,6 +17,7 @@ b = Parameters.b; % Distance from CG to rear axle
 g = Parameters.g; % Gravity
 
 %TODO: ADD ROTATIONAL INERTIA EFFECTS TO TRACTION LIMITED ACCELERATION
+%TODO: ADD DOWNFORCE AND CENTER OF PRESSURE TO TRACTION LIMITED ACCELERATION
 
 Ip = Parameters.Ip; % Powertrain rotational inertia (2x wheels + diff)
 N = Parameters.N; % Powertrain gear reduction
@@ -32,13 +33,8 @@ eta = Parameters.eta; % Powertrain Efficiency
 
 Fz = mass * g * ( (b/L) + (Ax/g)*(hg/L));
 
-Fx = 2*tire_x(Fz/2); %symmetric weight distribution
-
-D = 0.5.*rho.*Cd.*v.^2.* A; %drag force
-
-Rr =  Crr.* mass.*9.81; %Rolling resistance
-
-Ax = (1./mass).*(Fx - D - Rr);
+FxRear = 2*tire_x(FzRear/2); %symmetric weight distribution
+FxFront = 2*tire_x(FzFront/2); %symmetric weight distribution
 
 end
 
