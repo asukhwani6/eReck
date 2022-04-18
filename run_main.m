@@ -1,7 +1,8 @@
 track = "david.csv";
-vehicle_parameters;
+% HT05_vehicle_parameters;
+HT06_vehicle_parameters;
 optim_number = 500; %Optimization discretization for braking
-vel_start = 15; %Starting velocity
+vel_start = 13; %Starting velocity
 [v, t, locations] = runLapSimOptimized(vel_start,track, straight_parameters, cornering_parameters,optim_number);
  
 %TODO: lateral tire drag in corner accels
@@ -10,7 +11,7 @@ vel_start = 15; %Starting velocity
 
 vehicle_parameters;
 track = "david.csv";
-vel_start = 15; %Starting velocity
+vel_start = 13; %Starting velocity
 optim_number = 500; %Optimization discretization for braking
 vary_length = 10;
 
