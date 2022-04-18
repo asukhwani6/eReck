@@ -1,5 +1,9 @@
-function [v,t,eventIndices] = runLapSimOptimized(vel_start,track,sp,cp,ep)
+function [v,t,eventIndices] = runLapSimOptimized(vel_start,track,Parameters,ep)
+%% Get Used Vehicle Parameters:
+% UPDATE VEHICLE PARAMETERS IN VEHICLE PARAMETER FILES
+L = Parameters.L; % Wheelbase
 
+%% Code
 track_1 = importdata(track);
 t_radius = track_1.data(:,2)./3.281; %[M]
 t_length = track_1.data(:,3)./3.281; %[M]
@@ -15,23 +19,23 @@ for ct = 1:length(t_length)
     fprintf("%d element\n",ct)
     % CASE STATEMENTS FOR CORNERING AND STRAIGHTS
 
-    sa = rad2deg(sp(2)/t_radius(ct));
-    velLimit = cornerFunc(cp,t_radius(ct),sa);
+    sa = rad2deg(L/t_radius(ct));
+    velLimit = cornerFunc(Parameters,t_radius(ct),sa);
 
     if (ct ~= length(t_radius))
-        saNextCorner = rad2deg(sp(2)/t_radius(ct+1));
-        velLimitNextCorner = cornerFunc(cp,t_radius(ct+1),saNextCorner);
+        saNextCorner = rad2deg(L/t_radius(ct+1));
+        velLimitNextCorner = cornerFunc(Parameters,t_radius(ct+1),saNextCorner);
     else % if last element, velocity limit of next corner is defined as the maximum 64 bit floating point number
         velLimitNextCorner = realmax;
     end
 
     if (t_radius(ct) == 0) %straight
 
-        [time_v, vel_v, ~] = speed_transient(sp, t_length(ct),optim_number,vel_0,velLimitNextCorner);
+        [time_v, vel_v, ~] = speed_transient(Parameters, t_length(ct),optim_number,vel_0,velLimitNextCorner);
 
     elseif (t_radius(ct) ~= 0) %corner
 
-        [time_v, vel_v] = speed_transient_corner(sp, t_length(ct), velLimitNextCorner, velLimit, ep,vel_0);
+        [time_v, vel_v] = speed_transient_corner(Parameters, t_length(ct), velLimitNextCorner, velLimit, ep,vel_0);
     end
 
     time_v = time_v + t(end);
@@ -44,7 +48,7 @@ for ct = 1:length(t_length)
 
     if vel_v(end) > velLimitNextCorner
         % loop through track elements in reverse order to correct discrepancy
-        [v, t, eventIndices] = recurEvents(vel_v(end), ct, v, t, eventIndices, sp, cp, ep, optim_number, t_radius, t_length);
+        [v, t, eventIndices] = recurEvents(vel_v(end), ct, v, t, eventIndices, Parameters, ep, optim_number, t_radius, t_length);
     end
 
     vel_0 = v(end);

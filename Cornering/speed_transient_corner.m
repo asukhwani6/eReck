@@ -1,7 +1,6 @@
-%TODO: might still be fucked up need more testing
-function [time,  v] = speed_transient_corner(straight_parameters,track_length, av_next, allowed_v, optim_number, entry_vel)
+function [time,  v] = speed_transient_corner(Parameters,track_length, av_next, allowed_v, optim_number, entry_vel)
 
-if (track_length > 40) %For effciency purposes
+if (track_length > 40) %For efficiency purposes
     d = linspace(track_length/3, track_length,optim_number);
 else
     d = linspace(0.5, track_length,optim_number);
@@ -14,8 +13,8 @@ for i = 1:optim_number %always sweep from braking entire distance
     
     braking_distance = track_length - d(i);
     
-    [accel_time, accel_v, traveled_dis] = acceleration(entry_vel, allowed_v,d(i), straight_parameters,0);
-    [brake_time, exit_v, ~] = braking(accel_v(end),braking_distance,straight_parameters);   
+    [accel_time, accel_v, traveled_dis] = acceleration(entry_vel, allowed_v,d(i), Parameters,0);
+    [brake_time, exit_v, ~] = braking(accel_v(end),braking_distance,Parameters);   
     %[brake_time, exit_v] = brake_calculator(braking_a,braking_distance, accel_v(end));
     
     if (i ~=1 && i ~=optim_number)
@@ -48,14 +47,3 @@ else
     brake_time = brake_time + accel_time(end);
     time = [accel_time, brake_time];
 end
-
-% figure;
-% hold on
-% plot(braking_distance)
-% plot(traveled_dis)
-% plot(braking_distance + traveled_dis)
-% yline(track_length)
-% legend('Braking Dis', 'Traveled Dis', 'Brake + Travel')
-
-
-%fprintf("End Velocity %3f\n",final_v);

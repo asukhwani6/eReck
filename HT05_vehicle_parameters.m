@@ -1,53 +1,57 @@
 %Vehicle Parameters (all units SI)
 
-g = 9.81; %acceleration due to gravity
+Parameters.g = 9.81; %acceleration due to gravity
 
-mass = 237; %[kg]
+Parameters.curbMass = 167; %[kg]
 
-L = 1.53; %wheelbase
+% David/Diego
+Parameters.driverMass = 68; %[kg]
 
-b = 0.732; %distance from CG to rear axle
+Parameters.mass = Parameters.curbMass + Parameters.driverMass; %[kg]
 
-m_u = 1.5;
+Parameters.L = 1.53; %wheelbase
 
-Tm = 120; %motor torque
+Parameters.b = 0.732; %distance from CG to rear axle
 
-N = 4.44; %gear ratio
+Parameters.m_u = 1.5;
 
-Im = 0.0441 + 0.02; %motor + motor output shaft rotational inertia 
+Parameters.Tm = 120; %motor torque
 
-Ip = 0.144; %powertrain rotational inertia (2x wheels + diff)
+Parameters.N = 4.44; %gear ratio
 
-r = 0.203; %tire radius
+Parameters.Im = 0.0441 + 0.02; %motor + motor output shaft rotational inertia 
 
-rho = 1.225; %air density
+Parameters.Ip = 0.144; %powertrain rotational inertia (2x wheels + diff)
 
-Cd = 1.3; %drag coefficient
+Parameters.r = 0.203; %tire radius
 
-Cl = 2.48; % Lift coefficient
+Parameters.rho = 1.225; %air density
 
-A = 1; %frontal (reference) area
+% HIGH DRAG CONFIGURATION
+Parameters.Cd = 1.30; %drag coefficient
+Parameters.Cl = 2.48; % Lift coefficient
 
-Crr = 0.028; %rolling resistance coefficient
+% LOW DRAG CONFIGURATION
+% Param.Cd = 0.85;
+% Param.Cl = 1.62;
+Parameters.A = 1; %frontal (reference) area
 
-eta = 0.93; %powertrain efficiency 
+Parameters.Crr = 0.028; %rolling resistance coefficient R25B 
 
-Kf = 113 * 57.3; %Front roll stiffness
+Parameters.eta = 0.93; %powertrain efficiency 
 
-Kr = 113 * 57.3; %Rear roll stiffness
+Parameters.Kf = 113 * 57.3; %Front roll stiffness
 
-hf = 0.058; %Front roll center height
+Parameters.Kr = 113 * 57.3; %Rear roll stiffness
 
-hr = 0.071; %Rear roll center height 
+Parameters.hf = 0.058; %Front roll center height
 
-hg = 0.23; %CG height
+Parameters.hr = 0.071; %Rear roll center height 
 
-hl = hg - (((hr-hf)/L)*(L-b) + hf); %Distance from CG to roll axis 
+Parameters.hg = 0.25; %CG height
 
-v = 9.69;
+Parameters.hl = Parameters.hg - (((Parameters.hr-Parameters.hf)/Parameters.L)*(Parameters.L-Parameters.b) + Parameters.hf); %Distance from CG to roll axis 
 
-t = 1.215; %track
+Parameters.v = 9.69;
 
-straight_parameters = [mass L hg b m_u Tm N Im Ip r rho Cd A Crr eta g Cl];
-
-cornering_parameters = [mass, Kf, Kr, L, b, rho, hf, hr, hg, hl, Cl, A, t, g, v];
+Parameters.t = 1.215; %track

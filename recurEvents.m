@@ -1,14 +1,19 @@
-function [v, t, eventIndices] = recurEvents(velEnd, ct, v, t, eventIndices, sp, cp, ep, optim_number, t_radius, t_length)
+function [v, t, eventIndices] = recurEvents(velEnd, ct, v, t, eventIndices, Parameters, ep, optim_number, t_radius, t_length)
+%% Get Used Vehicle Parameters:
+% UPDATE VEHICLE PARAMETERS IN VEHICLE PARAMETER FILES
+L = Parameters.L; % Wheelbase
+
+
 % Replace previously calculated velocity and time vectors with recalculated
 % vectors in order to meet velocity conditions at all points on the track
 
 % determine maximum entrance velocity of previously analyzed corner
-sa = rad2deg(sp(2)/t_radius(ct));
-velLimit = cornerFunc(cp,t_radius(ct),sa);
+sa = rad2deg(L/t_radius(ct));
+velLimit = cornerFunc(Parameters,t_radius(ct),sa);
 
 % determine maximum entrance velocity of next element
-saNextCorner = rad2deg(sp(2)/t_radius(ct+1));
-velLimitNextCorner = cornerFunc(cp,t_radius(ct+1),saNextCorner);
+saNextCorner = rad2deg(L/t_radius(ct+1));
+velLimitNextCorner = cornerFunc(Parameters,t_radius(ct+1),saNextCorner);
 
 velReplace = [];
 timeReplace = [];
@@ -25,9 +30,9 @@ while velEnd > velLimitNextCorner
     % requirements
     for velTest = linspace(v(eventIndices(ct-1)),0,optim_number) %Guess and Check Portion
         if (t_radius(ct) == 0) && (ct < length(t_radius)) %straight
-            [time_v, vel_v,~] = speed_transient(sp, t_length(ct),optim_number,velTest,velLimitNextCorner);
+            [time_v, vel_v,~] = speed_transient(Parameters, t_length(ct),optim_number,velTest,velLimitNextCorner);
         else %corner
-            [time_v, vel_v] = speed_transient_corner(sp, t_length(ct), velLimitNextCorner, velLimit, ep,velTest);
+            [time_v, vel_v] = speed_transient_corner(Parameters, t_length(ct), velLimitNextCorner, velLimit, ep,velTest);
         end
         if (vel_v(end) - velLimitNextCorner) < 0 %Check if guess satisfies the braking requirement
             break
@@ -64,9 +69,7 @@ if ct ~=1
     end
 end
 
-
 startReplaceInd = eventIndices(ct);
-% TODO: might be fucked up, Anson special "I hope I'm right"
 v = [v(1:startReplaceInd) velReplace];
 timeCarryover = t(1:startReplaceInd);
 t = [timeCarryover timeReplace+timeCarryover(end)];

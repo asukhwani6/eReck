@@ -1,6 +1,19 @@
-function [v_allowed] = cornerFunc(cornering_parameters,radius,slipAngle)
+function [v_allowed] = cornerFunc(Parameters,radius,slipAngle)
 
-[mass, Kf, Kr, L, b, rho, hf, hr, hg, hl, Cl, A, t, g, v] = corner_decode(cornering_parameters);
+% Get Used Vehicle Parameters
+g = Parameters.g; % gravity
+b = Parameters.b; % distance from CG to rear axle
+L = Parameters.L; % wheelbase
+mass = Parameters.mass; % vehicle + driver mass
+t = Parameters.t; % track width
+hl = Parameters.hl; % Distance from CG to roll axis
+hf = Parameters.hf; % Front roll axis height
+hr = Parameters.hr; % Rear roll axis height
+Kf = Parameters.Kf; % Front roll stiffness
+Kr = Parameters.Kr; % Rear roll stiffness
+rho = Parameters.rho; % Density of air
+Cl = Parameters.Cl; % Lift coefficient
+A = Parameters.A; % Reference frontal area
 
 %Put parameters into FYcalc for front and rear to get coefficients. See pg 215-216 of Fundamentals of Vehicle Dynamics (Gillespie)
 
@@ -26,7 +39,7 @@ G = -4.*bStiff.*(cFront.^2+cRear.^2);
 H = radius.*lF.*(2 + 4.*bStiff.*sF + 2.*bStiff.*lR.*radius) + radius.*lR.*(2 + 4.*bStiff.*sR + 2.*bStiff.*lR.*radius) + mass./slipAngle;
 I = 2.*aStiff.*mass.*g-2.*bStiff.*(sR.^2+sF.^2);
 
-f = @(x) G.*x.^2 + H.*x + I; %Lateral force( lateral accel)
+f = @(x) G.*x.^2 + H.*x + I; %Lateral force(lateral accel)
 [latAccel,~,~] = Bisection(f,1,30,0.1,100);
 latAccel_g = latAccel./g;
 

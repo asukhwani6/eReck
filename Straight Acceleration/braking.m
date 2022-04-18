@@ -1,4 +1,4 @@
-function [Time, V, td] = braking(vi, dist, parameters)
+function [Time, V, td] = braking(vi, dist, Parameters)
 
 td = 0; %Traveled distance
 h = 0.005;
@@ -11,10 +11,9 @@ vo = 1;
 while td < dist && vo ~=0
     
     t = t+h;
- 
     
     midV = vi + (h./2).*Ai;
-    [~,midslope] = tl_brake(midV,Ai,parameters);
+    [~,midslope] = tl_brake(midV,Ai,Parameters);
     vo = vi + h.*midslope;
     Ai = midslope;
     if vo <= 0.001

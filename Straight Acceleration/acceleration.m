@@ -1,6 +1,6 @@
 %parameters: entry velocity, distance | output: time, exit velocity
 % type = 1 for distance check, otherwise distance and velocity check
-function [Time, V, traveled_dis] = acceleration(entry_v, target_v, dist,parameters, type)
+function [Time, V, traveled_dis] = acceleration(entry_v, target_v, dist,Parameters, type)
 
 h = 0.01;%Time step size
 
@@ -20,22 +20,22 @@ while check
     
     %Determines which regime to iterate
     
-    [Ft,Ai] = tractionLimited(vi,Ai,parameters);
-    [Fp,~] = powerLimited(vi,parameters);
+    [Ft,Ai] = tractionLimited(vi,Ai,Parameters);
+    [Fp,~] = powerLimited(vi,Parameters);
     
     if Ft <= Fp
         
-        [~,Ai] = tractionLimited(vi,Ai,parameters);      
+        [~,Ai] = tractionLimited(vi,Ai,Parameters);      
         midV = vi + (h./2).*Ai;       
-        [~,midslope] = tractionLimited(midV,Ai,parameters);
+        [~,midslope] = tractionLimited(midV,Ai,Parameters);
         vo = vi + h.*midslope;
         Ai = midslope;      
        
     elseif Fp < Ft
         
-        [~,Ai] = powerLimited(vi,parameters);
+        [~,Ai] = powerLimited(vi,Parameters);
         midV = vi + (h./2).*Ai; 
-        [~,midslope] = powerLimited(midV,parameters);
+        [~,midslope] = powerLimited(midV,Parameters);
         vo = vi + h.*midslope;
         Ai = midslope;            
     end

@@ -3,7 +3,7 @@ track = "david.csv";
 HT06_vehicle_parameters;
 optim_number = 500; %Optimization discretization for braking
 vel_start = 13; %Starting velocity
-[v, t, locations] = runLapSimOptimized(vel_start,track, straight_parameters, cornering_parameters,optim_number);
+[v, t, locations] = runLapSimOptimized(vel_start,track,Parameters,optim_number);
  
 %TODO: lateral tire drag in corner accels
  
@@ -75,10 +75,10 @@ speed_new = vehicle_speed(mask,2);
 data_distance = cumtrapz(time_new, speed_new);
 sim_distance = cumtrapz(t(2:end),v(2:end));
 
-figure
+% figure
 hold on
 
-plot(data_distance,speed_new);
+% plot(data_distance,speed_new);
 plot(sim_distance*1.028,v(1:end-1),'.-');
 legend('Raw Data', 'Sim Data')
 grid on
