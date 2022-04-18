@@ -1,10 +1,12 @@
-function [v, t, locations] = recurEvents(velEnd, ct, v, t, locations, sp, cp, ep, optim_number, t_radius, t_length)
+function [v, t, eventIndices] = recurEvents(velEnd, ct, v, t, eventIndices, sp, cp, ep, optim_number, t_radius, t_length)
 % Replace previously calculated velocity and time vectors with recalculated
 % vectors in order to meet velocity conditions at all points on the track
 
+% determine maximum entrance velocity of previously analyzed corner
 sa = rad2deg(sp(2)/t_radius(ct));
 velLimit = cornerFunc(cp,t_radius(ct),sa);
 
+% determine maximum entrance velocity of next element
 saNextCorner = rad2deg(sp(2)/t_radius(ct+1));
 velLimitNextCorner = cornerFunc(cp,t_radius(ct+1),saNextCorner);
 
@@ -13,42 +15,42 @@ timeReplace = [];
 updatedLocations = [];
 count = 0;
 
-% end condition
+% while loop decrements ct (track element) and optimizes exit velocity to
+% satisfy entry velocity requirements of subsequent corners
 while velEnd > velLimitNextCorner
+    fprintf('Original end velocity of element %d: %.3f\n',ct-1,velEnd) 
     count = count + 1;
-
-    for velTest = linspace(v(locations(ct-1)),0,optim_number) %Guess and Check Portion
+    % for loop tests all velocities between previous element exit velocity
+    % and 0 to determine highest velocity which satisfies braking
+    % requirements
+    for velTest = linspace(v(eventIndices(ct-1)),0,optim_number) %Guess and Check Portion
         if (t_radius(ct) == 0) && (ct < length(t_radius)) %straight
-            [time_v, vel_v,~] = speed_transient(sp, t_length(ct-1),optim_number,velTest,velLimitNextCorner);
+            [time_v, vel_v,~] = speed_transient(sp, t_length(ct),optim_number,velTest,velLimitNextCorner);
         else %corner
-            [time_v, vel_v] = speed_transient_corner(sp, t_length(ct-1), velLimitNextCorner, velLimit, ep,velTest);
+            [time_v, vel_v] = speed_transient_corner(sp, t_length(ct), velLimitNextCorner, velLimit, ep,velTest);
         end
-        if (vel_v(end) - velLimitNextCorner) < ep %Check if guessed corrected
+        if (vel_v(end) - velLimitNextCorner) < 0 %Check if guess satisfies the braking requirement
             break
         end
     end
     updatedLocations = [length(time_v), updatedLocations];
-    velLimitNextCorner = velTest;
-    velEnd = v(locations(ct-1));
+    velLimitNextCorner = velTest; %Set limit of the next loop's corner to be the newly determined entrance velocity
+    velEnd = v(eventIndices(ct-1));
+    fprintf('Recalculated end velocity of element %d: %.3f\n',ct-1,vel_v(end))
     ct = ct-1;
 
-    velReplace = [vel_v, velReplace] ;
+    velReplace = [vel_v', velReplace] ;
     timeReplace = [time_v, timeReplace];
+    % while loop breaks if new end velocity is lower than next corner
+    % velocity requirement
 end
 
 fprintf("%d track sections replaced\n",count)
 
-% for i = 2:length(updatedLocations)-1
-%     timeReplace(updatedLocations(i):updatedLocations(i+1)-1) = timeReplace(updatedLocations(i)-1);
-% end
-% timeReplace(updatedLocations(end):end) =
 if ct ~=1
-    carryOverIndices = locations(1:ct-1);
-    locations = locations(1:ct-1);
-    sum = 0;
+    eventIndices = eventIndices(1:ct);
     for i = 1:length(updatedLocations)
-        sum = sum + updatedLocations(i);
-        locations = [locations, carryOverIndices(end) + sum];
+        eventIndices = [eventIndices, eventIndices(end) + updatedLocations(i)];
     end
     % timeReplaceLocations = locations(ct:end)-locations(ct-1);
     if count ~= 1
@@ -63,8 +65,8 @@ if ct ~=1
 end
 
 
-startReplaceInd = locations(ct);
+startReplaceInd = eventIndices(ct);
 % TODO: might be fucked up, Anson special "I hope I'm right"
-v = [v(1:startReplaceInd) velReplace'];
+v = [v(1:startReplaceInd) velReplace];
 timeCarryover = t(1:startReplaceInd);
 t = [timeCarryover timeReplace+timeCarryover(end)];

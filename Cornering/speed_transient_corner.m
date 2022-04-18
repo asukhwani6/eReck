@@ -1,8 +1,5 @@
 %TODO: might still be fucked up need more testing
-
 function [time,  v] = speed_transient_corner(straight_parameters,track_length, av_next, allowed_v, optim_number, entry_vel)
-
-threshold = 0.01;
 
 if (track_length > 40) %For effciency purposes
     d = linspace(track_length/3, track_length,optim_number);
@@ -21,13 +18,17 @@ for i = 1:optim_number %always sweep from braking entire distance
     [brake_time, exit_v, ~] = braking(accel_v(end),braking_distance,straight_parameters);   
     %[brake_time, exit_v] = brake_calculator(braking_a,braking_distance, accel_v(end));
     
-    
-    if (i ~=optim_number)
-        if (abs(av_next - exit_v(end))<threshold || (exit_v(end) > av_next))
+    if (i ~=1 && i ~=optim_number)
+        if (exit_v(end) > av_next)
+            exit_v = tempVec_v;
+            brake_time = tempVec_t;
+            traveled_dis = tempDistance;
             break %end optimization
         end
     end
-    
+    tempVec_v = exit_v;
+    tempVec_t = brake_time;
+    tempDistance = traveled_dis;
 end
 
 d_temp = traveled_dis + braking_distance; %Total distance from accel/brake
