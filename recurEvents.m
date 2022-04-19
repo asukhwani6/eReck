@@ -23,7 +23,7 @@ count = 0;
 % while loop decrements ct (track element) and optimizes exit velocity to
 % satisfy entry velocity requirements of subsequent corners
 while velEnd > velLimitNextCorner
-    fprintf('Original end velocity of element %d: %.3f\n',ct-1,velEnd) 
+    % fprintf('Original end velocity of element %d: %.3f\n',ct-1,velEnd) 
     count = count + 1;
     % for loop tests all velocities between previous element exit velocity
     % and 0 to determine highest velocity which satisfies braking
@@ -41,7 +41,7 @@ while velEnd > velLimitNextCorner
     updatedLocations = [length(time_v), updatedLocations];
     velLimitNextCorner = velTest; %Set limit of the next loop's corner to be the newly determined entrance velocity
     velEnd = v(eventIndices(ct-1));
-    fprintf('Recalculated end velocity of element %d: %.3f\n',ct-1,vel_v(end))
+    % fprintf('Recalculated end velocity of element %d: %.3f\n',ct-1,vel_v(end))
     ct = ct-1;
 
     velReplace = [vel_v', velReplace] ;
@@ -50,7 +50,7 @@ while velEnd > velLimitNextCorner
     % velocity requirement
 end
 
-fprintf("%d track sections replaced\n",count)
+% fprintf("%d track sections replaced\n",count)
 
 if ct ~=1
     eventIndices = eventIndices(1:ct);

@@ -2,25 +2,27 @@
 
 Parameters.g = 9.81; %acceleration due to gravity
 
-Parameters.curbMass = 172; %[kg]
+Parameters.curbMass = 168; %[kg]
 
 % David/Lachlan
-% driverMass = 68; %[kg]
+Parameters.driverMass = 68; %[kg]
 
 % Claire
-Parameters.driverMass = 50; %[kg]
+% Parameters.driverMass = 50; %[kg]
 
 Parameters.mass = Parameters.curbMass + Parameters.driverMass; %[kg]
 
 Parameters.L = 1.53; %wheelbase
 
-Parameters.b = 0.732; %distance from CG to rear axle
+Parameters.b = 0.78; %distance from CG to rear axle 51% front
 
 Parameters.m_u = 1.5;
 
-Parameters.Tm = 140; %motor torque
+Parameters.TmRear = 140; %motor torque
+Parameters.TmFront = 0; %motor torque
 
-Parameters.N = 4.44; %gear ratio
+Parameters.nRear = 4.44; %gear ratio
+Parameters.nFront = 4.44; %gear ratio
 
 Parameters.Im = 0.0441 + 0.02; %motor + motor output shaft rotational inertia 
 
@@ -40,6 +42,9 @@ Parameters.Cl = 2.62; % Lift coefficient
 
 Parameters.A = 1; %frontal (reference) area
 
+Parameters.hcp = 0.3974; % CP height
+Parameters.bcp = 0.6604; % Distance from CP to rear axle
+
 Parameters.Crr = 0.028; %rolling resistance coefficient R25B 
 
 Parameters.eta = 0.93; %powertrain efficiency 
@@ -52,7 +57,7 @@ Parameters.hf = 0.058; %Front roll center height
 
 Parameters.hr = 0.071; %Rear roll center height 
 
-Parameters.hg = 0.18; %CG height
+Parameters.hg = 0.20; %CG height
 
 Parameters.hl = Parameters.hg - (((Parameters.hr-Parameters.hf)/Parameters.L)*(Parameters.L-Parameters.b) + Parameters.hf); %Distance from CG to roll axis 
 

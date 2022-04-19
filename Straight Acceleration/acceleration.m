@@ -1,6 +1,6 @@
 %parameters: entry velocity, distance | output: time, exit velocity
 % type = 1 for distance check, otherwise distance and velocity check
-function [Time, V, traveled_dis] = acceleration(entry_v, target_v, dist,Parameters, type)
+function [Time, V, traveled_dis, FnormFront, FnormRear] = acceleration(entry_v, target_v, dist,Parameters, type)
 
 %TODO: ADD INERTIAL EFFECTS OF POWERTRAIN
 
@@ -26,6 +26,8 @@ t = 0;
 vi = entry_v;
 Ai = 0;
 check = 1;
+FnormFront = [];
+FnormRear = [];
 
 %Midpoint method for loop
 while check
@@ -42,7 +44,7 @@ while check
 
     % distribute inertial forces based on Cg
     FzInertialFront = mass*g*((b/L) - (Ai/g)*(hg/L));
-    FzInertialRear = mass*g*((b/L) + (Ai/g)*(hg/L));
+    FzInertialRear = mass*g*(((L-b)/L) + (Ai/g)*(hg/L));
 
     % combine inertial and aero forces
     FzFront = FzAeroFront + FzInertialFront;
@@ -110,6 +112,8 @@ while check
     Time = [Time t]; %Increments total time
     traveled_dis = cumtrapz(Time,V);
     traveled_dis = traveled_dis(end);
+    FnormFront = [FnormFront,FzFront];
+    FnormRear = [FnormRear,FzRear];
     
     %Condition check
     if (type == 1)

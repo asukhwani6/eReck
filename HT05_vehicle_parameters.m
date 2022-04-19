@@ -2,7 +2,7 @@
 
 Parameters.g = 9.81; %acceleration due to gravity
 
-Parameters.curbMass = 167; %[kg]
+Parameters.curbMass = 172; %[kg]
 
 % David/Diego
 Parameters.driverMass = 68; %[kg]
@@ -51,7 +51,7 @@ Parameters.hf = 0.058; %Front roll center height
 
 Parameters.hr = 0.071; %Rear roll center height 
 
-Parameters.hg = 0.25; %CG height
+Parameters.hg = 0.24; %CG height
 
 Parameters.hl = Parameters.hg - (((Parameters.hr-Parameters.hf)/Parameters.L)*(Parameters.L-Parameters.b) + Parameters.hf); %Distance from CG to roll axis 
 

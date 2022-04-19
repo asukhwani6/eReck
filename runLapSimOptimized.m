@@ -7,7 +7,7 @@ L = Parameters.L; % Wheelbase
 track_1 = importdata(track);
 t_radius = track_1.data(:,2)./3.281; %[M]
 t_length = track_1.data(:,3)./3.281; %[M]
-optim_number = 500;
+optim_number = 1000;
 
 vel_0 = vel_start; %initial speed
 totalT= 0; %initial time

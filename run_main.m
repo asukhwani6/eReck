@@ -2,7 +2,7 @@
 track = "FSAE2021NevadaEndurance.csv";
 HT05_vehicle_parameters;
 % HT06_vehicle_parameters;
-optim_number = 500; %Optimization discretization for braking
+optim_number = 1000; %Optimization discretization for braking
 vel_start = 13; %Starting velocity
 
 % RUN LAP SIMULATION
