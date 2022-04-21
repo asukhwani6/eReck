@@ -1,4 +1,4 @@
-function [v, t, eventIndices] = recurEvents(velEnd, ct, v, t, eventIndices, Parameters, ep, optim_number, t_radius, t_length)
+function [v, t, eventIndices] = recurEvents(velEnd, ct, v, t, eventIndices, Parameters, optim_number, t_radius, t_length)
 %% Get Used Vehicle Parameters:
 % UPDATE VEHICLE PARAMETERS IN VEHICLE PARAMETER FILES
 L = Parameters.L; % Wheelbase
@@ -8,12 +8,12 @@ L = Parameters.L; % Wheelbase
 % vectors in order to meet velocity conditions at all points on the track
 
 % determine maximum entrance velocity of previously analyzed corner
-sa = rad2deg(L/t_radius(ct));
-velLimit = cornerFunc(Parameters,t_radius(ct),sa);
+velLim = velLimit(t_radius(ct),Parameters);
+
+
 
 % determine maximum entrance velocity of next element
-saNextCorner = rad2deg(L/t_radius(ct+1));
-velLimitNextCorner = cornerFunc(Parameters,t_radius(ct+1),saNextCorner);
+velLimitNextCorner = velLimit(t_radius(ct+1),Parameters);
 
 velReplace = [];
 timeReplace = [];
@@ -29,14 +29,13 @@ while velEnd > velLimitNextCorner
     % and 0 to determine highest velocity which satisfies braking
     % requirements
     for velTest = linspace(v(eventIndices(ct-1)),0,optim_number) %Guess and Check Portion
-        if (t_radius(ct) == 0) && (ct < length(t_radius)) %straight
-            [time_v, vel_v,~] = speed_transient(Parameters, t_length(ct),optim_number,velTest,velLimitNextCorner);
-        else %corner
-            [time_v, vel_v] = speed_transient_corner(Parameters, t_length(ct), velLimitNextCorner, velLimit, ep,velTest);
-        end
+        
+            [time_v, vel_v] = speed_transient(t_length(ct),t_radius(ct),velTest,velLimitNextCorner, Parameters);
+            
         if (vel_v(end) - velLimitNextCorner) < 0 %Check if guess satisfies the braking requirement
             break
         end
+        
     end
     updatedLocations = [length(time_v), updatedLocations];
     velLimitNextCorner = velTest; %Set limit of the next loop's corner to be the newly determined entrance velocity
@@ -44,7 +43,7 @@ while velEnd > velLimitNextCorner
     % fprintf('Recalculated end velocity of element %d: %.3f\n',ct-1,vel_v(end))
     ct = ct-1;
 
-    velReplace = [vel_v', velReplace] ;
+    velReplace = [vel_v, velReplace] ;
     timeReplace = [time_v, timeReplace];
     % while loop breaks if new end velocity is lower than next corner
     % velocity requirement

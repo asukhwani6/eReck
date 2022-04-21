@@ -1,4 +1,6 @@
-function [time,  v, braking_distance] = speed_transient(Parameters,track_length, optim_number, entry_vel, allowed_v)
+function [time,  v, braking_distance] = speed_transient(track_length, track_radius, entry_vel, allowed_v, Parameters)
+
+optim_number = Parameters.optim_number;
 
 d = linspace(0.5, track_length,optim_number);
 
@@ -10,10 +12,10 @@ for i = 1:optim_number %always sweep from braking entire distance
     
     braking_distance = track_length - d(i);
     
-    [accel_time, accel_v] = acceleration(entry_vel,0, d(i),Parameters,1);
+    [accel_time, accel_v] = accel(track_radius, d(i), entry_vel, Parameters);
     
     %[brake_time, exit_v] = brake_calculator(braking_a,braking_distance, accel_v(end));
-    [brake_time, brake_v,~] = braking(accel_v(end), braking_distance, Parameters);
+    [brake_time, brake_v] = braking(track_radius, braking_distance, accel_v(end), Parameters);
     %fprintf("End Velocity %3f\n",final_v);
     if (i ~=1 && i ~=optim_number)
         if ((brake_v(end) > allowed_v(end)))
@@ -26,7 +28,7 @@ for i = 1:optim_number %always sweep from braking entire distance
     tempBrake_time = brake_time;
 end
 
-v = [accel_v; brake_v];
+v = [accel_v, brake_v];
 brake_time = brake_time + accel_time(end);
 
 %fprintf("End Velocity %3f\n",final_v);

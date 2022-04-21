@@ -62,3 +62,5 @@ Parameters.hl = Parameters.hg - (((Parameters.hr-Parameters.hf)/Parameters.L)*(P
 Parameters.v = 9.69;
 
 Parameters.t = 1.215; %track
+
+Parameters.optim_number = 1000; %discretization number of brake/accel guess and check

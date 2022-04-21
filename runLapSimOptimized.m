@@ -1,13 +1,14 @@
-function [v,t,eventIndices] = runLapSimOptimized(vel_start,track,Parameters,ep)
+function [v,t,eventIndices] = runLapSimOptimized(vel_start,track,Parameters)
 %% Get Used Vehicle Parameters:
 % UPDATE VEHICLE PARAMETERS IN VEHICLE PARAMETER FILES
 L = Parameters.L; % Wheelbase
+optim_number = Parameters.optim_number; %Discretization number
 
 %% Code
 track_1 = importdata(track);
 t_radius = track_1.data(:,2)./3.281; %[M]
 t_length = track_1.data(:,3)./3.281; %[M]
-optim_number = 1000;
+
 
 vel_0 = vel_start; %initial speed
 totalT= 0; %initial time
@@ -19,28 +20,23 @@ for ct = 1:length(t_length)
     fprintf("%d element\n",ct)
     % CASE STATEMENTS FOR CORNERING AND STRAIGHTS
 
-    sa = rad2deg(L/t_radius(ct));
-    velLimit = cornerFunc(Parameters,t_radius(ct),sa);
+    %sa = rad2deg(L/t_radius(ct));
+    %velLimit = cornerFunc(Parameters,t_radius(ct),sa);
 
     % If last element, velocity limit of next corner is defined as the maximum 64 bit floating point number
     % Else velocity limit is calculated based on next track element
     if (ct == length(t_radius))
         velLimitNextCorner = realmax;
     else 
-        saNextCorner = rad2deg(L/t_radius(ct+1));
-        velLimitNextCorner = cornerFunc(Parameters,t_radius(ct+1),saNextCorner);
+        velLimitNextCorner = velLimit(t_radius(ct+1),Parameters);
     end
 
-    if (t_radius(ct) == 0) %straight
-        [time_v, vel_v, ~] = speed_transient(Parameters, t_length(ct),optim_number,vel_0,velLimitNextCorner);
-
-    elseif (t_radius(ct) ~= 0) %corner
-        [time_v, vel_v] = speed_transient_corner(Parameters, t_length(ct), velLimitNextCorner, velLimit, ep,vel_0);
-    end
+    [time_v, vel_v] = speed_transient(t_length(ct),t_radius(ct),vel_0,velLimitNextCorner, Parameters);
+    
 
     time_v = time_v + t(end);
     t = [t, time_v];
-    v = [v, vel_v'];
+    v = [v, vel_v];
     eventIndices = [eventIndices length(t)];
 
     % if final velocity of event which just occured is greater than maximum
@@ -48,7 +44,7 @@ for ct = 1:length(t_length)
 
     if vel_v(end) > velLimitNextCorner
         % loop through track elements in reverse order to correct discrepancies
-        [v, t, eventIndices] = recurEvents(vel_v(end), ct, v, t, eventIndices, Parameters, ep, optim_number, t_radius, t_length);
+        [v, t, eventIndices] = recurEvents(vel_v(end), ct, v, t, eventIndices, Parameters, optim_number, t_radius, t_length);
     end
 
     vel_0 = v(end);

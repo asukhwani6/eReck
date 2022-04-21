@@ -13,14 +13,10 @@ Parameters.L = 1.53; %wheelbase
 
 Parameters.b = 0.732; %distance from CG to rear axle
 
-Parameters.m_u = 1.5;
-
 Parameters.TmRear = 120; % Rear motor torque
-
 Parameters.TmFront = 0; % Front motor torque
 
 Parameters.nRear = 4.44; % Rear gear ratio
-
 Parameters.nFront = 4.44; % Front gear ratio
 
 Parameters.Im = 0.0441 + 0.02; %motor + motor output shaft rotational inertia 
@@ -57,4 +53,6 @@ Parameters.hl = Parameters.hg - (((Parameters.hr-Parameters.hf)/Parameters.L)*(P
 
 Parameters.v = 9.69;
 
-Parameters.t = 1.215; %track
+Parameters.t = 1.215; %track width
+
+Parameters.optim_number = 500; %discretization number of brake/accel guess and check

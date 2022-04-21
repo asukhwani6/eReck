@@ -1,27 +1,21 @@
-function [tVec, vVec] = accel(r,l,v,Parameters)
-%% Get Vehicle Parameters
-Crr = Parameters.Crr;
-Cd = Parameters.Cd;
-A = Parameters.A;
-rho = Parameters.rho;
-mass = Parameters.mass;
+function [v] = velLimit(r, Parameters)
 
-% Timestep = 0.01 seconds
-t = 0;
-dt = 0.01;
-
-Ax = 0;
-dist = 0;
-vVec = [];
-tVec = [];
-
-if r == 0 
+if r==0
     r = realmax;
 end
 
-while(abs(dist)<l)
-    t = t + dt;
-    [FzTires, ~] = tireNormalForces(Ax,v,r,Parameters);
+err = realmax;
+Ax = 0;
+v = 0;
+mass = Parameters.mass;
+dt = 0.001;
+Crr = Parameters.Crr;
+rho = Parameters.rho;
+Cd = Parameters.Cd;
+A = Parameters.A;
+
+while err > 0.0005
+   [FzTires, ~] = tireNormalForces(Ax,v,r,Parameters);
     [f_x, ~] = fff(FzTires, v,r,Parameters,0);
     
     % Power limitation
@@ -63,10 +57,10 @@ while(abs(dist)<l)
     Fd = 0.5*(midV^2)*Cd*A*rho;
     NetFx = sum(f_x) - Fd - Frr;
     Ax = NetFx/mass;
-
+    vLast = v;
     v = v + Ax*dt;
-    dist = dist + v*dt;
+    err = v - vLast;
+end
+    
 
-    vVec = [vVec, v];
-    tVec = [tVec, t];
 end
