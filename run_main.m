@@ -1,12 +1,12 @@
 %% Lap Sim
 track = "FSAE2021NevadaEndurance.csv";
-HT05_vehicle_parameters;
-% HT06_vehicle_parameters;
+% HT05_vehicle_parameters;
+HT06_vehicle_parameters;
 optim_number = 1000; %Optimization discretization for braking
 vel_start = 13; %Starting velocity
 
 % RUN LAP SIMULATION
-[v, t, locations] = runLapSimOptimized(vel_start,track,Parameters,optim_number);
+[v, t, locations, Ax, Ay] = runLapSimOptimized(vel_start,track,Parameters);
  
 %% Overlay With FSAE Nevada Fastest Recorded Lap Data
 
@@ -22,10 +22,10 @@ speed_new = vehicle_speed(mask,2);
 data_distance = cumtrapz(time_new, speed_new);
 sim_distance = cumtrapz(t(2:end),v(2:end));
 
-% figure
+figure
 hold on
 
-% plot(data_distance,speed_new);
+plot(data_distance,speed_new);
 plot(sim_distance*1.028,v(1:end-1),'.-');
 legend('Raw Data', 'Sim Data')
 grid on
@@ -36,6 +36,18 @@ ylabel('Velocity [m/s]');
 xlim([0 max(sim_distance*1.028)])
 ylim([0 30])
 
+%% Plot g-g diagram
+% figure
+hold on
+plot(Ay/9.81,Ax/9.81,'.')
+xlabel('Lateral Acceleration (g)')
+ylabel('Longitudinal Acceleration (g)')
+title('g-g Diagram FSAE Nevada 2021 Simulated')
+figure
+%vAdj = v(1:6222)';
+%AyAdj = Ay'/9.81;
+%AxAdj = Ax'/9.81;
+%scatter3(AyAdj,AxAdj,vAdj)
 
 %% Accel Script Tests
 HT05_vehicle_parameters;

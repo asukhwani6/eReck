@@ -1,4 +1,4 @@
-function [v,t,eventIndices] = runLapSimOptimized(vel_start,track,Parameters)
+function [v,t,eventIndices,Ax,Ay] = runLapSimOptimized(vel_start,track,Parameters)
 %% Get Used Vehicle Parameters:
 % UPDATE VEHICLE PARAMETERS IN VEHICLE PARAMETER FILES
 L = Parameters.L; % Wheelbase
@@ -11,10 +11,11 @@ t_length = track_1.data(:,3)./3.281; %[M]
 
 
 vel_0 = vel_start; %initial speed
-totalT= 0; %initial time
 eventIndices = [];
 v = vel_0; %velocity vector
-t = totalT; %time vector
+t = 0; %time vector
+Ax = 0; % Longitudinal acceleration vector
+Ay = 0; % Lateral acceleration vector
 
 for ct = 1:length(t_length)
     fprintf("%d element\n",ct)
@@ -31,12 +32,14 @@ for ct = 1:length(t_length)
         velLimitNextCorner = velLimit(t_radius(ct+1),Parameters);
     end
 
-    [time_v, vel_v] = speed_transient(t_length(ct),t_radius(ct),vel_0,velLimitNextCorner, Parameters);
+    [time_v, vel_v, Ax_v, Ay_v] = speed_transient(t_length(ct),t_radius(ct),vel_0,velLimitNextCorner, Parameters);
     
 
     time_v = time_v + t(end);
     t = [t, time_v];
     v = [v, vel_v];
+    Ax = [Ax,Ax_v];
+    Ay = [Ay,Ay_v];
     eventIndices = [eventIndices length(t)];
 
     % if final velocity of event which just occured is greater than maximum
@@ -44,7 +47,7 @@ for ct = 1:length(t_length)
 
     if vel_v(end) > velLimitNextCorner
         % loop through track elements in reverse order to correct discrepancies
-        [v, t, eventIndices] = recurEvents(vel_v(end), ct, v, t, eventIndices, Parameters, optim_number, t_radius, t_length);
+        [v, t, eventIndices] = recurEvents(vel_v(end), ct, v, t, eventIndices, Parameters, optim_number, t_radius, t_length, Ax, Ay);
     end
 
     vel_0 = v(end);

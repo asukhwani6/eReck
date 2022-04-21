@@ -1,4 +1,4 @@
-function [v, t, eventIndices] = recurEvents(velEnd, ct, v, t, eventIndices, Parameters, optim_number, t_radius, t_length)
+function [v, t, eventIndices, Ax, Ay] = recurEvents(velEnd, ct, v, t, eventIndices, Parameters, optim_number, t_radius, t_length, Ax, Ay)
 %% Get Used Vehicle Parameters:
 % UPDATE VEHICLE PARAMETERS IN VEHICLE PARAMETER FILES
 L = Parameters.L; % Wheelbase
@@ -7,16 +7,13 @@ L = Parameters.L; % Wheelbase
 % Replace previously calculated velocity and time vectors with recalculated
 % vectors in order to meet velocity conditions at all points on the track
 
-% determine maximum entrance velocity of previously analyzed corner
-velLim = velLimit(t_radius(ct),Parameters);
-
-
-
 % determine maximum entrance velocity of next element
 velLimitNextCorner = velLimit(t_radius(ct+1),Parameters);
 
 velReplace = [];
 timeReplace = [];
+AxReplace = [];
+AyReplace = [];
 updatedLocations = [];
 count = 0;
 
@@ -30,7 +27,7 @@ while velEnd > velLimitNextCorner
     % requirements
     for velTest = linspace(v(eventIndices(ct-1)),0,optim_number) %Guess and Check Portion
         
-            [time_v, vel_v] = speed_transient(t_length(ct),t_radius(ct),velTest,velLimitNextCorner, Parameters);
+            [time_v, vel_v, Ax_v, Ay_v] = speed_transient(t_length(ct),t_radius(ct),velTest,velLimitNextCorner, Parameters);
             
         if (vel_v(end) - velLimitNextCorner) < 0 %Check if guess satisfies the braking requirement
             break
@@ -45,6 +42,8 @@ while velEnd > velLimitNextCorner
 
     velReplace = [vel_v, velReplace] ;
     timeReplace = [time_v, timeReplace];
+    AxReplace = [Ax_v, AxReplace];
+    AyReplace = [Ay_v, AyReplace];
     % while loop breaks if new end velocity is lower than next corner
     % velocity requirement
 end
@@ -70,5 +69,7 @@ end
 
 startReplaceInd = eventIndices(ct);
 v = [v(1:startReplaceInd) velReplace];
+Ax = [Ax(1:startReplaceInd) AxReplace];
+Ay = [Ay(1:startReplaceInd) AyReplace];
 timeCarryover = t(1:startReplaceInd);
 t = [timeCarryover timeReplace+timeCarryover(end)];
