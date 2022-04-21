@@ -1,9 +1,9 @@
 %Parameters: [Fn_rearIn, Fn_rearOut, Fn_frontIn, Fn_frontOut]
-function [f_x, f_y] = fff(FzTires, v,r,Parameters)
+function [f_x, f_y] = fff(FzTires, v,r,Parameters,graph)
 
     mass = Parameters.mass;
-    f_fx = @(x) -1238 + 360.6*log(x);
-    f_fy = @(x) -900.8 + 265.5*log(x);
+    f_fx = @(x) -0.001379*x.^2 + 3.542*x + 7.922;
+    f_fy = @(x) -0.002103*x.^2 + 2.892*x + 13.71;
     
     
     fy_car = (mass*v^2)/r;
@@ -23,20 +23,25 @@ function [f_x, f_y] = fff(FzTires, v,r,Parameters)
     f_y = (b/Fy_carMax) * fy_car; %Instantaneous Lateral Force per tire
     
     Fx_carMax = sum(a);
-    
-%      figure
-%      hold on
+    if graph == 1
+%         figure
+%         hold on
+    end
     
     for c = 1:4
         [~,temp(c)] = min(abs(Fy(:,c) - f_y(c)));
         f_x(c) = Fx(temp(c),c);
-        
-%          plot(Fx(:,c),Fy(:,c));
+        if graph == 1
+            plot(Fx(:,c),Fy(:,c));
+        end
     end
     
     for c = 1:4
-%          plot(f_x(c),f_y(c),'o');
+        if graph == 1
+            plot(f_x(c),f_y(c),'o');
+        end
     end
-    
-%      legend('Envelope 1','Envelope 2','Envelope 3','Envelope 4','Instanteous 1','Instanteous 2','Instanteous 3','Instanteous 4');
+    if graph == 1
+          legend('Envelope 1','Envelope 2','Envelope 3','Envelope 4','Instanteous 1','Instanteous 2','Instanteous 3','Instanteous 4');
+    end
 end

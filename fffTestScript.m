@@ -1,7 +1,6 @@
 close all
 HT06_vehicle_parameters;
 r = 20;
-v0 = 0;
 l = 100;
 
 mass = Parameters.mass;
@@ -9,7 +8,7 @@ mass = Parameters.mass;
 t = 0;
 dt = 0.001;
 Ax = 0;
-v = 0;
+v = 23;
 dist = 0;
 vVec = [];
 dVec = [];
@@ -20,15 +19,35 @@ FyTiresVec = [];
 while(abs(dist)<l)
     t = t + dt;
     [FzTires, phi] = tireNormalForces(Ax,v,r,Parameters);
-    [f_x, f_y] = fff(FzTires, v,r,Parameters);
+    [f_x, ~] = fff(FzTires, v,r,Parameters,0);
     
-    % Power Limitation
+    % Power Limitation Logic
+    [FxFront,FxRear] = powerLimited(v,Parameters);
 
+    rearAxleForceTraction = f_x(1) + f_x(2);
+    FxOutRear = min(FxRear,rearAxleForceTraction);
+    f_x(1) = (f_x(1)/rearAxleForceTraction)*FxOutRear;
+    f_x(2) = (f_x(2)/rearAxleForceTraction)*FxOutRear;
+    f_x(3) = min(FxFront,f_x(3));
+    f_x(4) = min(FxFront,f_x(4));
+
+    % Calculate Acceleration
     Ax = sum(f_x)/mass;
     midV = v + (dt./2).*Ax;
 
     [FzTires, phi] = tireNormalForces(Ax,midV,r,Parameters);
-    [f_x, f_y] = fff(FzTires,midV,r,Parameters);
+    [f_x, f_y] = fff(FzTires,midV,r,Parameters,0);
+
+    % Power Limitation Logic
+    [FxFront,FxRear] = powerLimited(v,Parameters);
+
+    rearAxleForceTraction = f_x(1) + f_x(2);
+    FxOutRear = min(FxRear,rearAxleForceTraction);
+    f_x(1) = (f_x(1)/rearAxleForceTraction)*FxOutRear;
+    f_x(2) = (f_x(2)/rearAxleForceTraction)*FxOutRear;
+    f_x(3) = min(FxFront,f_x(3));
+    f_x(4) = min(FxFront,f_x(4));
+
     Ax = sum(f_x)/mass;
 
     v = v + Ax*dt;
@@ -83,3 +102,13 @@ plot(FxTiresVec(:,2)./FzTiresVec(:,2),FyTiresVec(:,2)./FzTiresVec(:,2),'.')
 plot(FxTiresVec(:,3)./FzTiresVec(:,3),FyTiresVec(:,3)./FzTiresVec(:,3),'.')
 plot(FxTiresVec(:,4)./FzTiresVec(:,4),FyTiresVec(:,4)./FzTiresVec(:,4),'.')
 legend({'Ri','Ro','Fi','Fo'})
+
+figure
+hold on
+plot(FxTiresVec(:,1),FyTiresVec(:,1),'.')
+plot(FxTiresVec(:,2),FyTiresVec(:,2),'.')
+plot(FxTiresVec(:,3),FyTiresVec(:,3),'.')
+plot(FxTiresVec(:,4),FyTiresVec(:,4),'.')
+legend({'Ri','Ro','Fi','Fo'})
+
+[f_x, f_y] = fff(FzTires, v,r,Parameters,1);
