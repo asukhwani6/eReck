@@ -16,8 +16,6 @@ Parameters.L = 1.53; %wheelbase
 
 Parameters.b = 0.78; %distance from CG to rear axle 51% front
 
-Parameters.m_u = 1.5;
-
 Parameters.TmRear = 140; %motor torque
 Parameters.TmFront = 0; %motor torque
 
