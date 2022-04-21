@@ -1,4 +1,5 @@
-function [FzRi, FzRo, FzFi, FzFo, phi] = tireNormalForces(Ax,Ay,v,r,Parameters)
+function [FzTires, phi] = tireNormalForces(Ax,v,r,Parameters)
+% FzTires = [FzRi, FzRo, FzFi, FzFo]
 
 mass = Parameters.mass; % Vehicle + driver mass
 rho = Parameters.rho; % Density of air
@@ -12,14 +13,13 @@ bcp = Parameters.bcp; % Distance from CP to rear axle
 g = Parameters.g; % Gravity
 L = Parameters.L; % wheelbase
 t = Parameters.t; % track width
-hl = Parameters.hl; % Distance from CG to roll axis
 hf = Parameters.hf; % Front roll axis height
 hr = Parameters.hr; % Rear roll axis height
 Kf = Parameters.Kf; % Front roll stiffness
 Kr = Parameters.Kr; % Rear roll stiffness
 
-% recalculate hl
-hl = Parameters.hg - (((Parameters.hr-Parameters.hf)/Parameters.L)*(Parameters.L-Parameters.b) + Parameters.hf); %Distance from CG to roll axis 
+% calculate hl
+hl = hg - (((hr-hf)/L)*(L-b) + hf); %Distance from CG to roll axis 
 
 %% Static forces calculated assuming symmetric CG
 FzRstatic = mass*g*((L-b)/L);
@@ -48,3 +48,5 @@ FzRi = FzRstatic/2 + FzLongInerDelta/2 - FzLatRearDelta + FzRaero/2;
 FzRo = FzRstatic/2 + FzLongInerDelta/2 + FzLatRearDelta + FzRaero/2;
 FzFi = FzFstatic/2 - FzLongInerDelta/2 - FzLatFrontDelta + FzFaero/2;
 FzFo = FzFstatic/2 - FzLongInerDelta/2  + FzLatFrontDelta + FzFaero/2;
+
+FzTires = [FzRi, FzRo, FzFi, FzFo];
