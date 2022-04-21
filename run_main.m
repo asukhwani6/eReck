@@ -50,14 +50,14 @@ figure
 %scatter3(AyAdj,AxAdj,vAdj)
 
 %% Accel Script Tests
-HT05_vehicle_parameters;
+HT06_vehicle_parameters;
 
 num = 100;
 
 dist = linspace(1,75,num);
 
 for i = 1:100
-    [~,v] = acceleration(0,realmax,dist(i),Parameters,num);
+    [~,v,~,~] = accel(0,dist(i),0,Parameters);
     v_max(i) = v(end);
 end
 
