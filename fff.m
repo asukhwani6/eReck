@@ -2,8 +2,8 @@
 function [f_x, f_y] = fff(FzTires, v,r,Parameters,graph)
 
     mass = Parameters.mass;
-    f_fx = @(x) .45*(-0.001379*x.^2 + 3.542*x + 7.922);
-    f_fy = @(x) .45*(-0.002103*x.^2 + 2.892*x + 13.71);
+    f_fx = @(x) .50*(-0.001379*x.^2 + 3.542*x + 7.922);
+    f_fy = @(x) .50*(-0.002103*x.^2 + 2.892*x + 13.71);
     
     
     fy_car = (mass*v^2)/r;
