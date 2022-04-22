@@ -1,4 +1,4 @@
-function [tVec, vVec, AxVec, AyVec] = braking(r,l,v,Parameters)
+function [tVec, vVec, AxVec, AyVec] = braking(r,l,v,Ax_in,Parameters)
 %% Usage: Transient Braking, Both Cornering and Straight Line Braking
 % Based on vehicle conditions (Ax, v, r), calculates instantaneous normal
 % force at each tire. TTC tire data fit curves define performance envelope
@@ -26,7 +26,7 @@ slipAngle = deg2rad(10);
 t = 0;
 dt = 0.01;
 
-Ax = 0;
+Ax = Ax_in;
 dist = 0;
 vVec = [v];
 tVec = [0];

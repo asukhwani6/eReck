@@ -32,7 +32,7 @@ for ct = 1:length(t_length)
         velLimitNextCorner = velLimit(t_radius(ct+1),Parameters);
     end
 
-    [time_v, vel_v, Ax_v, Ay_v] = speed_transient(t_length(ct),t_radius(ct),vel_0,velLimitNextCorner, Parameters);
+    [time_v, vel_v, Ax_v, Ay_v] = speed_transient(t_length(ct),t_radius(ct),vel_0,velLimitNextCorner, Ax(end), Parameters);
     
 
     time_v = time_v + t(end);

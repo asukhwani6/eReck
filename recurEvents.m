@@ -27,7 +27,7 @@ while velEnd > velLimitNextCorner
     % requirements
     for velTest = linspace(v(eventIndices(ct-1)),0,optim_number) %Guess and Check Portion
         
-            [time_v, vel_v, Ax_v, Ay_v] = speed_transient(t_length(ct),t_radius(ct),velTest,velLimitNextCorner, Parameters);
+            [time_v, vel_v, Ax_v, Ay_v] = speed_transient(t_length(ct),t_radius(ct),velTest,velLimitNextCorner, Ax(ct), Parameters);
             
         if (vel_v(end) - velLimitNextCorner) < 0 %Check if guess satisfies the braking requirement
             break

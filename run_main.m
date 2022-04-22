@@ -1,12 +1,27 @@
 %% Lap Sim
 track = "FSAE2021NevadaEndurance.csv";
 % HT05_vehicle_parameters;
-HT06_vehicle_parameters;
+HT05_vehicle_parameters;
 optim_number = 1000; %Optimization discretization for braking
 vel_start = 13; %Starting velocity
 
 % RUN LAP SIMULATION
 [v, t, locations, Ax, Ay] = runLapSimOptimized(vel_start,track,Parameters);
+
+%% Duplicate code cleanup
+
+lengthLoop = length(t) - 1;
+
+for i = 1:lengthLoop
+    if t(i) == t(i+1)
+        lengthLoop = lengthLoop - 1;
+        t = [t(1:i) t(i+2:end)];       
+        v_average = (v(i) + v(i+1))/2; 
+        disp(v_average);
+        v = [v(1:i-1) v_average v(i+2:end)];      
+    end
+    
+end
  
 %% Overlay With FSAE Nevada Fastest Recorded Lap Data
 

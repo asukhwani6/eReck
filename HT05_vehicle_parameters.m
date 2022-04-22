@@ -56,3 +56,13 @@ Parameters.v = 9.69;
 Parameters.t = 1.215; %track width
 
 Parameters.optim_number = 500; %discretization number of brake/accel guess and check
+
+Parameters.cell = 72; %Cells in Series
+
+Parameters.IR = 0.002; %Cell Internal Resistance
+
+Parameters.cellV = 4.2; %Cell Voltage
+
+Parameters.Rw = 16/39.37; %Wheel size [m]
+
+Parameters.cellMaxI = 220; %Max Cell Current [A]
