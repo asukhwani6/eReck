@@ -1,12 +1,32 @@
+%% USAGE:
+
+% Read README file on github
+
 %% Lap Sim
 track = "FSAE2021NevadaEndurance.csv";
 % HT05_vehicle_parameters;
-HT05_vehicle_parameters;
-optim_number = 1000; %Optimization discretization for braking
-vel_start = 13; %Starting velocity
+% HT06_vehicle_parameters;
+HT07_AMK_hubs_vehicle_parameters;
+
+vel_start = 12; %Starting velocity
+
+Parameters.nRear = 10.5;
+Parameters.nFront = 13.5;
+
+% Parameters.driverFactorLong = .875;
+% Parameters.driverFactorLat = .875;
 
 % RUN LAP SIMULATION
-[v, t, locations, Ax, Ay] = runLapSimOptimized(vel_start,track,Parameters);
+
+[v, t, locations, Ax, Ay, Fx, Fz, e] = runLapSimOptimized(vel_start,track,Parameters);
+
+dist = cumtrapz(t,v);
+lapDistance = dist(end);
+lapEnergy = sum(e) ; %Joules
+lapEnergykWh = lapEnergy*2.77778e-7;
+raceEnergy = lapEnergykWh*22000/lapDistance;
+fprintf('Total Energy Expenditure During Race: %.2f kWh\n',raceEnergy)
+fprintf('Simulated Lap Time: %.2f seconds\n',t(end))
 
 %% Duplicate code cleanup
 
@@ -22,7 +42,7 @@ for i = 1:lengthLoop
     end
     
 end
- 
+
 %% Overlay With FSAE Nevada Fastest Recorded Lap Data
 
 load('6_19_21_data.mat');
@@ -37,12 +57,13 @@ speed_new = vehicle_speed(mask,2);
 data_distance = cumtrapz(time_new, speed_new);
 sim_distance = cumtrapz(t(2:end),v(2:end));
 
-figure
+% figure
 hold on
 
-plot(data_distance,speed_new);
+% plot(data_distance,speed_new);
+
 plot(sim_distance*1.028,v(1:end-1),'.-');
-legend('Raw Data', 'Sim Data')
+legend('Raw Data', 'Sim Data');
 grid on
 box on
 xlabel('Distance [m]');
@@ -51,6 +72,12 @@ ylabel('Velocity [m/s]');
 xlim([0 max(sim_distance*1.028)])
 ylim([0 30])
 
+figure
+hold on
+plot(t,v)
+for i = 1:length(locations)-1
+    xline(t(locations(i)));
+end
 %% Plot g-g diagram
 % figure
 hold on
@@ -58,48 +85,47 @@ plot(Ay/9.81,Ax/9.81,'.')
 xlabel('Lateral Acceleration (g)')
 ylabel('Longitudinal Acceleration (g)')
 title('g-g Diagram FSAE Nevada 2021 Simulated')
-figure
 %vAdj = v(1:6222)';
 %AyAdj = Ay'/9.81;
 %AxAdj = Ax'/9.81;
 %scatter3(AyAdj,AxAdj,vAdj)
 
-%% Accel Script Tests
-HT06_vehicle_parameters;
+%% Accel Script Test
+HT07_AMK_hubs_vehicle_parameters;
+Parameters.mass = Parameters.AccumulatorMass + Parameters.curbMass + Parameters.driverMass;
 
-num = 100;
+[accel_time,accel_v,~,~, accel_Fx] = accel(0,75,0,0,Parameters);
 
-dist = linspace(1,75,num);
+Fx = (sum(accel_Fx,2));
+accel_power = Fx.* accel_v'./1000;
 
-for i = 1:100
-    [~,v,~,~] = accel(0,dist(i),0,Parameters);
-    v_max(i) = v(end);
-end
-
-hold on
-box on
-plot(dist,v_max);
-xlabel('Distance [m]');
-ylabel('Max Speed [m]');
-
-%% Brake script test
-
-vehicle_parameters;
-
-dist = linspace(1,75,num);
-
-[t,v] = braking(30,100,straight_parameters);
-% [tt,vv] = brake_calculator(-1.5*9.81,30,30);
 figure
 hold on
 box on
-% plot(dist,v_max);
-% plot(dist,v_maxt);
-plot(t,v)
-a = diff(v)/diff(t)
+plot(accel_time,accel_v)
+plot(accel_time,accel_power)
+xlabel('Time (s)');
 
-% plot(tt,vv)
-legend('ODE','-1.5g braking');
-xlabel('Time [s]');
-ylabel('Max Speed [m]');
+%% Brake Script Test
+HT07_AMK_hubs_vehicle_parameters;
 
+[tVec, vVec, AxVec, AyVec, FxVec, FzVec] = braking(realmax,100,30,0,Parameters);
+
+figure
+hold on
+box on
+plot(tVec,vVec)
+
+xlabel('Time (s)');
+ylabel('Speed (m/s)');
+
+%% Skidpad Script Test
+HT07_AMK_hubs_vehicle_parameters;
+% skidpad radius estimated from cone radius + 1/2 track width + some
+% clearance to the cones
+rSkidpad = 8.5; % m
+
+vSkidpad = velLimit(8.5,Parameters);
+tSkidpad = 2.*rSkidpad.*pi./vSkidpad;
+
+disp(tSkidpad)
