@@ -19,8 +19,8 @@ Parameters.TmFront = 42; % Front motor torque
 Parameters.derateSpeedRatioRear = 0.95; % derate begins after derateRatio*maxMotorRPM
 Parameters.derateSpeedRatioFront = 0.95; % derate begins after derateRatio*maxMotorRPM
 
-Parameters.rearRegen = 42;
-Parameters.frontRegen = 42;
+Parameters.rearRegen = 21; % regen Torque treated for each motor individually
+Parameters.frontRegen = 21; % regen Torque treated for each motor individually
 
 Parameters.overrideEfficiencyRear = 0; % ONLY SET THIS VALUE IF YOU WISH TO OVERRIDE AMK A2370DD EFFICIENCY MAPPING
 Parameters.overrideEfficiencyFront = 0; % ONLY SET THIS VALUE IF YOU WISH TO OVERRIDE AMK A2370DD EFFICIENCY MAPPING
@@ -88,5 +88,5 @@ Parameters.driverFactorLat = 1; % driver is not as good as sim
 
 Parameters.tireFactor = 0.5; % tires are not as good as TTC data
 
-Parameters.graphDataEmrax208 = load('graphData.mat');
-Parameters.graphDataAMKA2370DD = load('graphDataAMK.mat');
+Parameters.graphDataEmrax208 = load('graphDataEmrax208.mat');
+Parameters.graphDataAMKA2370DD = load('graphDataAMKA2370DD.mat');

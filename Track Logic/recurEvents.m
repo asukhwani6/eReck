@@ -1,4 +1,5 @@
-function [v, t, eventIndices, Ax, Ay, Fx, Fz, energy] = recurEvents(velEnd, ct, v, t, eventIndices, optim_number, t_radius, t_length, Ax, Ay, Fx, Fz, energy, Parameters)
+function [v, t, eventIndices, Ax, Ay, Fx, Fz, T, elecPower, eff, q] = recurEvents(velEnd, ct, v, t, eventIndices, optim_number, t_radius, t_length, Ax, Ay, Fx, Fz, T, elecPower, eff, q, Parameters)
+
 %disp('Entered recurEvents')
 % Replace previously calculated velocity and time vectors with recalculated
 % vectors in order to meet velocity conditions at all points on the track
@@ -12,7 +13,10 @@ AxReplace = [];
 AyReplace = [];
 FxReplace = [];
 FzReplace = [];
-eReplace = [];
+elecPowerReplace = [];
+effReplace = [];
+qReplace = [];
+torReplace= [];
 updatedLocations = [];
 count = 0;
 
@@ -26,7 +30,7 @@ while velEnd > velLimitNextCorner
     % requirements
     for velTest = linspace(v(eventIndices(ct-1)),0,optim_number) %Guess and Check Portion
         
-            [time_v, vel_v, Ax_v, Ay_v, Fx_v, Fz_v, e_v] = speed_transient(t_length(ct),t_radius(ct),velTest,velLimitNextCorner, Ax(ct), Parameters);
+            [time_v, vel_v, Ax_v, Ay_v, Fx_v, Fz_v, T_v, elecPower_v, eff_v, q_v] = speed_transient(t_length(ct),t_radius(ct),velTest,velLimitNextCorner, Ax(ct), Parameters);
             vel = vel_v(end);
         if (vel - velLimitNextCorner) < 0 %Check if guess satisfies the braking requirement
             break
@@ -45,7 +49,11 @@ while velEnd > velLimitNextCorner
     AyReplace = [Ay_v, AyReplace];
     FxReplace = [Fx_v; FxReplace];
     FzReplace = [Fz_v; FzReplace];
-    eReplace = [e_v; eReplace];
+    elecPowerReplace = [elecPower_v; elecPowerReplace];
+    effReplace = [eff_v; effReplace];
+    qReplace = [q_v; qReplace];
+    torReplace = [T_v; torReplace];
+    
     % while loop breaks if new end velocity is lower than next corner
     % velocity requirement
 end
@@ -75,7 +83,11 @@ Ax = [Ax(1:startReplaceInd) AxReplace];
 Ay = [Ay(1:startReplaceInd) AyReplace];
 Fx = [Fx(1:startReplaceInd,:); FxReplace];
 Fz = [Fz(1:startReplaceInd,:); FzReplace];
-energy = [energy(1:ct) eReplace'];
+elecPower = [elecPower(1:startReplaceInd,:); elecPowerReplace];
+q = [q(1:startReplaceInd,:); qReplace];
+T = [T(1:startReplaceInd,:); torReplace];
+eff = [eff(1:startReplaceInd,:); effReplace];
+
 timeCarryover = t(1:startReplaceInd);
 t = [timeCarryover timeReplace+timeCarryover(end)];
 end

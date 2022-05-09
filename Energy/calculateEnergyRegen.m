@@ -1,4 +1,4 @@
-function [energy] = calculateEnergyRegen(Fx, v, t, Parameters)
+function [T, elecPower, eff, q] = calculateEnergyRegen(Fx, v, t, Parameters)
 
 nRear = Parameters.nRear; %Rear gear ratio
 nFront = Parameters.nFront; %Front gear ratio
@@ -13,51 +13,55 @@ motorType = Parameters.motorType;
 
 if ~isempty(t)
 
-    FxRear = Fx(:,1) + Fx(:,2);
-    FxFront = Fx(:,3) + Fx(:,4);
+    motorSpeedFrontRPM = (v./r) .* nFront *9.549297; %Calculate motor speed and convert to RPM
+    motorSpeedRearRPM = (v./r) .* nRear *9.549297; %Calculate motor speed and convert to RPM
 
-    motorSpeedRear = (v./r) .* nRear ;
-    motorSpeedFront = (v./r) .* nFront ;
-    motorSpeedFrontRPM = motorSpeedFront*9.549297;
-    motorSpeedRearRPM = motorSpeedRear*9.549297;
+    brakeTorque = [Fx(:,[1,2]).*r./nRear , Fx(:,[3,4]).*r./nFront];
 
-    brakeTorqueFront = (FxFront .* r)./nFront;
-    brakeTorqueRear = (FxRear .* r)./nRear;
+    regenTorqueRearIn = min([brakeTorque(:,1)'; rearRegen'])';
+    regenTorqueRearOut = min([brakeTorque(:,2)'; rearRegen'])';
+    regenTorqueFrontIn = min([brakeTorque(:,3)'; frontRegen'])';
+    regenTorqueFrontOut = min([brakeTorque(:,4)'; frontRegen'])';
 
-    regenBrakeTorqueFront = min([brakeTorqueFront';frontRegen']);
-    regenBrakeTorqueRear = min([brakeTorqueRear';rearRegen']);
+    T = [regenTorqueRearIn, regenTorqueRearOut, regenTorqueFrontIn, regenTorqueFrontOut];
 
-    effFront = ones(length(v),1);
-    effRear = ones(length(v),1);
+    eff = ones(length(v),4);
+
     switch motorType
         case 'Emrax 208'
             for i = 1:length(v)
-                effFront(i) = efficiencyEmrax208(motorSpeedFrontRPM(i), regenBrakeTorqueFront(i), graphDataEmrax208, overrideEfficiencyFront);
-                effRear(i) = efficiencyEmrax208(motorSpeedRearRPM(i), regenBrakeTorqueRear(i), graphDataEmrax208, overrideEfficiencyRear);
+                for j = 1:2
+                    eff(i,j) = efficiencyEmrax208(motorSpeedRearRPM(i), T(i,j), graphDataEmrax208, overrideEfficiencyRear);
+                end
+                for j = 3:4
+                    eff(i,j) = efficiencyEmrax208(motorSpeedFrontRPM(i), T(i,j), graphDataEmrax208, overrideEfficiencyFront);
+                end
             end
         case 'AMK A2370DD'
             for i = 1:length(v)
-                effFront(i) = efficiencyAMK(motorSpeedFrontRPM(i), regenBrakeTorqueFront(i), graphDataAMKA2370DD, overrideEfficiencyFront);
-                effRear(i) = efficiencyAMK(motorSpeedRearRPM(i), regenBrakeTorqueRear(i), graphDataAMKA2370DD, overrideEfficiencyRear);
+                 for j = 1:2
+                    eff(i,j) = efficiencyAMK(motorSpeedRearRPM(i), T(i,j), graphDataAMKA2370DD, overrideEfficiencyRear);
+                end
+                for j = 3:4
+                    eff(i,j) = efficiencyAMK(motorSpeedFrontRPM(i), T(i,j), graphDataAMKA2370DD, overrideEfficiencyFront);
+                end
             end
         otherwise
             disp('Parameters.motorType not recognized. Use "Emrax 208" or "AMK "')
     end
 
-    regenForceFront = regenBrakeTorqueFront.*nFront./r;
-    regenForceRear = regenBrakeTorqueRear.*nRear./r;
+    T = -T;
+    regenForce = [T(:,[1,2]).*nFront./r , T(:,[3,4]).*nFront./r];
 
-    PowerFront = regenForceFront.*v;
-    PowerRear = regenForceRear.*v;
-
-    PowerFront = PowerFront.*effFront;
-    PowerRear = PowerRear.*effRear;
-
-    energyFront = cumtrapz(t,PowerFront,1);
-    energyRear = cumtrapz(t,PowerRear,1);
-    energy = energyFront(end) + energyRear(end);
+    powerMech = regenForce.*v';
+    elecPower = powerMech.*eff;
+    q = elecPower - powerMech;
 else
-    energy = 0;
+    T = [];
+    elecPower = [];
+    eff = [];
+    q = [];
+
 end
 
 end

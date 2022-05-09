@@ -1,4 +1,4 @@
-function [time,  v, Ax, Ay, Fx, Fz, energy] = speed_transient(track_length, track_radius, entry_vel, allowed_v, Ax_in, Parameters)
+function [time,  v, Ax, Ay, Fx, Fz, T, elecPower, eff, q] = speed_transient(track_length, track_radius, entry_vel, allowed_v, Ax_in, Parameters)
 
 % define function handle for numerical solver fsolve
 fun = @brakeSolve;
@@ -24,17 +24,22 @@ end
 [brake_time, brake_v, brake_Ax, brake_Ay, brake_Fx, brake_Fz] = braking(track_radius, braking_distance, brakeEntryV, brakeEntryAx, Parameters);
 
 % Energy calculation only with acceleration
-energy = calculateEnergy(accel_Fx, accel_v, accel_time, Parameters);
+[T, elecPower, eff, q] = calculateEnergy(accel_Fx, accel_v, accel_time, Parameters);
 % Regen energy calculation only with braking
-energyRegen = calculateEnergyRegen(brake_Fx, brake_v, brake_time, Parameters);
+[TRegen, elecPowerRegen, effRegen, qRegen] = calculateEnergyRegen(brake_Fx, brake_v, brake_time, Parameters);
 
-energy = energy - energyRegen;
+T = [T; TRegen];
+elecPower = [elecPower; elecPowerRegen];
+eff = [eff; effRegen];
+q = [q; qRegen];
+
 
 v = [accel_v, brake_v];
 Ax = [accel_Ax, brake_Ax];
 Ay = [accel_Ay, brake_Ay];
 Fx = [accel_Fx; brake_Fx];
 Fz = [accel_Fz; brake_Fz];
+
 if ~isempty(accel_time)
     brake_time = brake_time + accel_time(end);
 end

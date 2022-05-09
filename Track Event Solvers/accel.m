@@ -26,7 +26,8 @@ slipAngle = sin(deg2rad(5));
 %%
 % Timestep = 0.01 seconds
 t = 0;
-dt = 0.001;
+
+dt = 0.01;
 
 Ax = Ax_in;
 dist = 0;

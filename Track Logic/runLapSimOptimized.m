@@ -1,4 +1,5 @@
-function [v,t,eventIndices,Ax,Ay,Fx, Fz, e] = runLapSimOptimized(vel_start,track,Parameters)
+function [v,t,eventIndices,Ax,Ay,Fx, Fz, T, elecPower, eff, q] = runLapSimOptimized(vel_start,track,Parameters)
+
 %% Get Used Vehicle Parameters:
 % UPDATE VEHICLE PARAMETERS IN VEHICLE PARAMETER FILES
 % CALCULATE TOTAL MASS BASED ON COMPONENT MASSES
@@ -20,6 +21,10 @@ Ay = 0; % Lateral acceleration vector
 Fx = [0,0,0,0];
 Fz = [0,0,0,0];
 e = 0;
+q = [0,0,0,0];
+T = [0,0,0,0];
+elecPower = [0,0,0,0];
+eff = [0,0,0,0];
 
 for ct = 1:length(t_length)
     % If last element, velocity limit of next corner is defined as the
@@ -31,7 +36,7 @@ for ct = 1:length(t_length)
         velLimitNextCorner = velLimit(t_radius(ct+1),Parameters);
     end
 
-    [time_v, vel_v, Ax_v, Ay_v, Fx_v, Fz_v, energy] = speed_transient(t_length(ct),t_radius(ct),vel_0,velLimitNextCorner, Ax(end), Parameters);
+    [time_v, vel_v, Ax_v, Ay_v, Fx_v, Fz_v, T_v, elecPower_v, eff_v, q_v] = speed_transient(t_length(ct),t_radius(ct),vel_0,velLimitNextCorner, Ax(end), Parameters);
     
 
     time_v = time_v + t(end);
@@ -41,7 +46,10 @@ for ct = 1:length(t_length)
     Ay = [Ay,Ay_v];
     Fx = [Fx; Fx_v];
     Fz = [Fz; Fz_v];
-    e = [e, energy];
+    q = [q; q_v];
+    T = [T; T_v];
+    eff = [eff; eff_v];
+    elecPower = [elecPower; elecPower_v];
     eventIndices = [eventIndices length(t)];
 
     % if final velocity of event which just occured is greater than maximum
@@ -50,7 +58,7 @@ for ct = 1:length(t_length)
     if vel_v(end) > velLimitNextCorner
         disp('Entered recurEvents')
         % loop through track elements in reverse order to correct discrepancies
-        [v, t, eventIndices, Ax, Ay, Fx, Fz, e] = recurEvents(vel_v(end), ct, v, t, eventIndices, optim_number, t_radius, t_length, Ax, Ay, Fx, Fz, e, Parameters);
+        [v, t, eventIndices, Ax, Ay, Fx, Fz, T, elecPower, eff, q] = recurEvents(vel_v(end), ct, v, t, eventIndices, optim_number, t_radius, t_length, Ax, Ay, Fx, Fz, T, elecPower, eff, q, Parameters);
     end
 
     vel_0 = v(end);

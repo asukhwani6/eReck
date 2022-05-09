@@ -1,24 +1,19 @@
 %% USAGE:
 
-% Read README file on github
-
 %% Lap Sim
 track = "FSAE2021NevadaEndurance.csv";
 % HT05_vehicle_parameters;
-% HT06_vehicle_parameters;
-HT07_AMK_hubs_vehicle_parameters;
+HT06_vehicle_parameters;
+% HT07_AMK_hubs_vehicle_parameters;
 
 vel_start = 12; %Starting velocity
-
-Parameters.nRear = 10.5;
-Parameters.nFront = 13.5;
 
 % Parameters.driverFactorLong = .875;
 % Parameters.driverFactorLat = .875;
 
 % RUN LAP SIMULATION
 
-[v, t, locations, Ax, Ay, Fx, Fz, e] = runLapSimOptimized(vel_start,track,Parameters);
+[v, t, locations, Ax, Ay, Fx, Fz, T, elecPower, eff, q] = runLapSimOptimized(vel_start,track,Parameters);
 
 dist = cumtrapz(t,v);
 lapDistance = dist(end);
@@ -94,17 +89,33 @@ title('g-g Diagram FSAE Nevada 2021 Simulated')
 HT07_AMK_hubs_vehicle_parameters;
 Parameters.mass = Parameters.AccumulatorMass + Parameters.curbMass + Parameters.driverMass;
 
-[accel_time,accel_v,~,~, accel_Fx] = accel(0,75,0,0,Parameters);
+accelLength = 75; %m
+entry_vel = 0; %start from standstill
 
-Fx = (sum(accel_Fx,2));
-accel_power = Fx.* accel_v'./1000;
+[accel_t, accel_v, accel_Ax, accel_Ay, accel_Fx, accel_Fz, accel_T, accel_elecPower, accel_eff, accel_q] = speed_transient(accelLength, realmax, entry_vel, realmax, 0, Parameters);
+accel_motorSpeed = [(accel_v'./Parameters.r).*Parameters.nRear,(accel_v'./Parameters.r).*Parameters.nFront].*9.5493;
 
 figure
+subplot(4,1,1)
 hold on
 box on
-plot(accel_time,accel_v)
-plot(accel_time,accel_power)
+plot(accel_t,accel_v)
+xlabel('Time (s)')
+ylabel('Velocity (m/s)')
+subplot(4,1,2)
+plot(accel_t,accel_elecPower)
 xlabel('Time (s)');
+ylabel('Motor Electrical Consumption (W)')
+subplot(4,1,3)
+plot(accel_t, accel_T)
+xlabel('Time (s)');
+ylabel('Motor Torque (Nm)')
+subplot(4,1,4)
+plot(accel_t, accel_motorSpeed)
+xlabel('Time (s)');
+ylabel('Motor Speed (RPM)')
+
+fprintf('Acceleration Simulated Time: %.3f\n',accel_time(end))
 
 %% Brake Script Test
 HT07_AMK_hubs_vehicle_parameters;
@@ -128,4 +139,4 @@ rSkidpad = 8.5; % m
 vSkidpad = velLimit(8.5,Parameters);
 tSkidpad = 2.*rSkidpad.*pi./vSkidpad;
 
-disp(tSkidpad)
+fprintf('Skidpad Simulated Time: %.3f\n',tSkidpad)

@@ -91,5 +91,5 @@ Parameters.driverFactorLat = 1; % driver is not as good as sim
 
 Parameters.tireFactor = 0.5; % tires are not as good as TTC data
 
-Parameters.graphDataEmrax208 = load('graphData.mat');
-Parameters.graphDataAMKA2370DD = load('graphDataAMK.mat');
+Parameters.graphDataEmrax208 = load('graphDataEmrax208.mat');
+Parameters.graphDataAMKA2370DD = load('graphDataAMKA2370DD.mat');
