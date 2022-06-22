@@ -23,11 +23,13 @@ if ~isempty(t)
     switch motorType
         case 'Emrax 208'
             for i = 1:length(v)
-                for j = 1:2
-                    eff(i,j) = efficiencyEmrax208(motorSpeedRearRPM(i), T(i,j), graphDataEmrax208, overrideEfficiencyRear);
+                for j = 1
+                    eff(i,j) = efficiencyEmrax208(motorSpeedRearRPM(i), T(i,j) + T(i,j+1), graphDataEmrax208, overrideEfficiencyRear);
+                    eff(i,j+1) = eff(i,j);
                 end
-                for j = 3:4
-                    eff(i,j) = efficiencyEmrax208(motorSpeedFrontRPM(i), T(i,j), graphDataEmrax208, overrideEfficiencyFront);
+                for j = 3
+                    eff(i,j) = efficiencyEmrax208(motorSpeedRearRPM(i), T(i,j) + T(i,j+1), graphDataEmrax208, overrideEfficiencyRear);
+                    eff(i,j+1) = eff(i,j);
                 end
             end
         case 'AMK A2370DD'

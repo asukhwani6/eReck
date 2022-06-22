@@ -6,6 +6,9 @@ track = "FSAE2021NevadaEndurance.csv";
 HT06_vehicle_parameters;
 % HT07_AMK_hubs_vehicle_parameters;
 
+Parameters.rearRegen = 0;
+Parameters.frontRegen = 0;
+
 vel_start = 12; %Starting velocity
 
 % Parameters.driverFactorLong = .875;
