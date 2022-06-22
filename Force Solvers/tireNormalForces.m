@@ -40,8 +40,8 @@ FzLatRearDelta = (Kr*phi + (FzFstatic*hr*v^2)/(r*g))/t;
 Fl = (Cl*rho*A*v^2)/2;
 Fd = (Cd*rho*A*v^2)/2;
 % Front/rear force distribution based on location of center of pressure
-FzRaero = Fl*(bcp/L) + Fd*(hcp/L);
-FzFaero = Fl*((L-bcp)/L) - Fd*(hcp/L);
+FzRaero = Fl*((L-bcp)/L) + Fd*(hcp/L);
+FzFaero = Fl*(bcp/L) - Fd*(hcp/L);
 
 %% Resolve forces on all tires
 FzRi = FzRstatic/2 + FzLongInerDelta/2 - FzLatRearDelta + FzRaero/2;
