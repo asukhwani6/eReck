@@ -20,8 +20,8 @@ vel_start = 12; %Starting velocity
 
 dist = cumtrapz(t,v);
 lapDistance = dist(end);
-lapEnergy = sum(e) ; %Joules
-lapEnergykWh = lapEnergy*2.77778e-7;
+lapEnergy = cumtrapz(t,elecPower); %Joules
+lapEnergykWh = sum(lapEnergy(end,:))*2.77778e-7;
 raceEnergy = lapEnergykWh*22000/lapDistance;
 fprintf('Total Energy Expenditure During Race: %.2f kWh\n',raceEnergy)
 fprintf('Simulated Lap Time: %.2f seconds\n',t(end))
