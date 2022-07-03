@@ -19,8 +19,8 @@ Parameters.TmFront = 42; % Front motor torque
 Parameters.derateSpeedRatioRear = 0.95; % derate begins after derateRatio*maxMotorRPM
 Parameters.derateSpeedRatioFront = 0.95; % derate begins after derateRatio*maxMotorRPM
 
-Parameters.rearRegen = 21; % regen Torque treated for each motor individually
-Parameters.frontRegen = 21; % regen Torque treated for each motor individually
+Parameters.rearRegen = 42; % regen Torque treated for each motor individually
+Parameters.frontRegen = 42; % regen Torque treated for each motor individually
 
 Parameters.overrideEfficiencyRear = 0; % ONLY SET THIS VALUE IF YOU WISH TO OVERRIDE AMK A2370DD EFFICIENCY MAPPING
 Parameters.overrideEfficiencyFront = 0; % ONLY SET THIS VALUE IF YOU WISH TO OVERRIDE AMK A2370DD EFFICIENCY MAPPING

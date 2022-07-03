@@ -3,16 +3,13 @@
 %% Lap Sim
 track = "FSAE2021NevadaEndurance.csv";
 % HT05_vehicle_parameters;
-HT06_vehicle_parameters;
-% HT07_AMK_hubs_vehicle_parameters;
-
-Parameters.rearRegen = 0;
-Parameters.frontRegen = 0;
+% HT06_vehicle_parameters;
+HT07_AMK_hubs_vehicle_parameters;
 
 vel_start = 12; %Starting velocity
 
-% Parameters.driverFactorLong = .875;
-% Parameters.driverFactorLat = .875;
+Parameters.driverFactorLong = .8;
+Parameters.driverFactorLat = .8;
 
 % RUN LAP SIMULATION
 
@@ -61,7 +58,7 @@ hold on
 % plot(data_distance,speed_new);
 
 plot(sim_distance*1.028,v(1:end-1),'.-');
-legend('Raw Data', 'Sim Data');
+legend('Raw Data HT05', 'Sim Data HT05', 'Sim Data HT06','Sim Data Hub Motor Architecture');
 grid on
 box on
 xlabel('Distance [m]');

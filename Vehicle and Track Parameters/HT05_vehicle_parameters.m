@@ -2,12 +2,11 @@
 
 Parameters.g = 9.81; %acceleration due to gravity
 
-Parameters.curbMass = 172; %[kg]
+Parameters.curbMass = 120; %[kg]
 
-% David/Diego
 Parameters.driverMass = 68; %[kg]
 
-Parameters.mass = Parameters.curbMass + Parameters.driverMass; %[kg]
+Parameters.AccumulatorMass = 43.5; %[kg]
 
 Parameters.L = 1.53; %wheelbase
 
