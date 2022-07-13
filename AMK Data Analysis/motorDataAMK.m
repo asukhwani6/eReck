@@ -43,21 +43,25 @@ zlabel('Shaft Torque')
 % is reduced to 10.5 A (example b).
 
 %% DC VOLTAGE DROP TORQUE ADJUSTMENT ANALYSIS
-packInternalResistance = 0.4; % Ohms
-s = 131;
-p = 1;
+load('A2370DD_T80C.mat')
 
-cellIR = 0.002;
-parallelIR = cellIR/p;
-packIR = s*parallelIR;
+
+cellIR = 0.01; % Ohms
+% cellIR = 0.002; % Ohms
+segP = 1;
+segS = 23;
+segN = 6;
+packP = segP;
+packS = segS*segN;
+packIR = (packS*cellIR/packP); % Ohms
 
 maxCellV = 4.2;
 minCellV = 3.6;
-MaxOCV = maxCellV*s; % (V) Assuming 142 cells at 4.2V maximum voltage
-MinOCV = minCellV*s; % (V) Minimum Operating Voltage at 3.6V minimum voltage
+MaxOCV = maxCellV*packS; % (V)
+MinOCV = minCellV*packS; % (V)
 
 % VOLTAGE DROP FIT TO MELASTA HT05/HT06 CELLS
-voltageDrop = Stator_Current_Phase_RMS*packInternalResistance;
+voltageDrop = Stator_Current_Phase_RMS*packIR;
 p1 =       1.025;
 p2 =      -1.301;
 p3 =      0.8786;
@@ -66,27 +70,33 @@ p4 =       3.605;
 % X = STATE OF CHARGE, OUT = OCV
 OCV = @(x) p1*x.^3 + p2*x.^2 + p3.*x + p4;
 
-SOC = linspace(0,1,5);
-packVoltage = 142*OCV(SOC);
+% SOC = linspace(0,1,20);
+% packVoltage = packS*OCV(SOC);
+
+packVoltage = linspace(0,600,50);
 [r,c] = size(voltageDrop);
 packAchievableTorque = zeros(r,c);
 voltageAdjustedTorque = [];
+voltageAdjustedMaxTorque = [];
 Legend = {};
 speedRPM = Speed(:,1);
-figure
 for i = 1:length(packVoltage)
     mask = Voltage_Line_Peak < (packVoltage(i)-voltageDrop); % filters for achievable motor conditions
     packAchievableTorque(mask) = Shaft_Torque(mask);
     voltageAdjustedTorque = cat(3,voltageAdjustedTorque,packAchievableTorque);
     maxTorque = max(packAchievableTorque,[],2);
-    hold on
-    plot(speedRPM,maxTorque)
-    Legend = [Legend,['SOC = ',num2str(SOC(i))]];
+    voltageAdjustedMaxTorque = [voltageAdjustedMaxTorque,maxTorque];
 end
+
+voltageLimitationFit = fit(packVoltage',speedRPM',voltageAdjustedMaxTorque,'linearInterp');
+
+figure
+surf(packVoltage,speedRPM,voltageAdjustedMaxTorque)
 legend(Legend)
-title('Torque vs RPM, Variable SOC, Voltage Sag Model',['Assuming LCO Chemistry, ',num2str(s),'s',num2str(p),'p, Cell IR = ',num2str(cellIR)])
-xlabel('Rotational Speed (RPM)')
-ylabel('Torque (Nm)')
+title('Torque vs RPM, Variable SOC, Voltage Sag Model',['Assuming LCO Chemistry, ',num2str(packS),'s',num2str(packP),'p, Cell IR = ',num2str(cellIR)])
+xlabel('Pack Voltage (V)')
+ylabel('Rotational Speed (RPM)')
+zlabel('Torque (Nm)')
 
 %% Efficiency Analysis
 speedRPM = Speed(:,1);
@@ -95,12 +105,10 @@ currentARMS = Stator_Current_Line_RMS(1,:);
 % Calculate power from power factor: https://www.engineeringtoolbox.com/power-factor-electrical-motor-d_654.html
 % ElectricalRealPower = sqrt(3).*Stator_Current_Phase_RMS.*Voltage_Line_RMS;
 MechanicalPower = Shaft_Torque.*Speed.*0.10472;
-% Efficiency = MechanicalPower./ElectricalRealPower;
+
 EfficiencyMechanical = MechanicalPower./(MechanicalPower + Total_Loss);
 EfficiencyMechanical(EfficiencyMechanical > 1) = 0;
-% EfficiencyElectrical = (ElectricalRealPower - Total_Loss)./ElectricalRealPower;
-% surf(speedRPM, currentARMS, EfficiencyElectrical')
-% hold on
+
 contour(speedRPM,currentARMS, EfficiencyMechanical',[0.7,.8,.84,.86,.88,.9],'LineWidth',1.2,'ShowText','on')
 
 % convert to torque and speed axes:
@@ -124,7 +132,9 @@ torqueMatNm = repmat(torqueNm,length(speedRPM),1);
 
 efficiencyMap = efficiencyFit(speedMatRPM,currentFit(speedMatRPM,torqueMatNm));
 
+figure
 surf(torqueNm,speedRPM,efficiencyMap)
 xlabel('Torque (Nm)')
 ylabel('Velocity (RPM)')
 zlabel('Efficiency')
+title('AMK Motor Efficiency vs Torque and RPM')

@@ -1,4 +1,5 @@
 %Vehicle Parameters (all units SI)
+Parameters.VehicleName = 'HT07 AMK Hub Motor';
 
 Parameters.g = 9.81; %acceleration due to gravity
 
@@ -90,3 +91,4 @@ Parameters.tireFactor = 0.5; % tires are not as good as TTC data
 
 Parameters.graphDataEmrax208 = load('graphDataEmrax208.mat');
 Parameters.graphDataAMKA2370DD = load('graphDataAMKA2370DD.mat');
+Parameters.graphDataVoltageLimitFitAMK = load('graphDataVoltageLimitFitAMK.mat');

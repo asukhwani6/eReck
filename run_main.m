@@ -23,21 +23,6 @@ raceEnergy = lapEnergykWh*22000/lapDistance;
 fprintf('Total Energy Expenditure During Race: %.2f kWh\n',raceEnergy)
 fprintf('Simulated Lap Time: %.2f seconds\n',t(end))
 
-%% Duplicate code cleanup
-
-lengthLoop = length(t) - 1;
-
-for i = 1:lengthLoop
-    if t(i) == t(i+1)
-        lengthLoop = lengthLoop - 1;
-        t = [t(1:i) t(i+2:end)];       
-        v_average = (v(i) + v(i+1))/2; 
-        disp(v_average);
-        v = [v(1:i-1) v_average v(i+2:end)];      
-    end
-    
-end
-
 %% Overlay With FSAE Nevada Fastest Recorded Lap Data
 
 load('6_19_21_data.mat');
@@ -52,10 +37,10 @@ speed_new = vehicle_speed(mask,2);
 data_distance = cumtrapz(time_new, speed_new);
 sim_distance = cumtrapz(t(2:end),v(2:end));
 
-% figure
+figure
 hold on
 
-% plot(data_distance,speed_new);
+plot(data_distance,speed_new);
 
 plot(sim_distance*1.028,v(1:end-1),'.-');
 legend('Raw Data HT05', 'Sim Data HT05', 'Sim Data HT06','Sim Data Hub Motor Architecture');
@@ -86,8 +71,10 @@ title('g-g Diagram FSAE Nevada 2021 Simulated')
 %scatter3(AyAdj,AxAdj,vAdj)
 
 %% Accel Script Test
-HT07_AMK_hubs_vehicle_parameters;
+% HT07_AMK_hubs_vehicle_parameters;
+HT06_vehicle_parameters;
 Parameters.mass = Parameters.AccumulatorMass + Parameters.curbMass + Parameters.driverMass;
+Parameters.mass = Parameters.mass;
 
 accelLength = 75; %m
 entry_vel = 0; %start from standstill
@@ -115,7 +102,7 @@ plot(accel_t, accel_motorSpeed)
 xlabel('Time (s)');
 ylabel('Motor Speed (RPM)')
 
-fprintf('Acceleration Simulated Time: %.3f\n',accel_time(end))
+fprintf('Acceleration Simulated Time: %.3f\n',accel_t(end))
 
 %% Brake Script Test
 HT07_AMK_hubs_vehicle_parameters;

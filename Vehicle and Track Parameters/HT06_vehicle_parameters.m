@@ -1,4 +1,5 @@
 %Vehicle Parameters (all units SI)
+Parameters.VehicleName = 'HT06 Emrax 208 RWD';
 
 Parameters.g = 9.81; %acceleration due to gravity
 
