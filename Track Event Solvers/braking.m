@@ -11,14 +11,13 @@ if r == 0
 end
 
 %% Get Vehicle Parameters
-Crr = Parameters.Crr;
 Cd = Parameters.Cd;
 A = Parameters.A;
 rho = Parameters.rho;
 mass = Parameters.mass;
 
 %% SLIP ANGLE CONSTANT, NOT A GOOD ASSUMPTION
-slipAngle = deg2rad(10);
+slipAngle = deg2rad(7);
 
 %%
 
@@ -36,6 +35,7 @@ FxVec = [];
 FzVec = [];
 
 while(abs(dist)<l)
+    
     t = t + dt;
     [f_z, ~] = tireNormalForces(Ax,v,r,Parameters);
     [f_x, f_y] = fff(f_z, v,r,Parameters,0);
@@ -49,11 +49,10 @@ while(abs(dist)<l)
     
     % Calculate acceleration and midpoint velocity using midpoint ODE
     % solver
-    Frr = sum(f_z)*Crr;
     Fd = 0.5*(v^2)*Cd*A*rho;
     % Lateral Tire Drag
     FxLatTireDrag = sum(f_y*slipAngle);
-    NetFx = sum(f_x) + Fd + Frr + FxLatTireDrag;
+    NetFx = sum(f_x) + Fd + FxLatTireDrag;
     Ax = -NetFx/mass;
     midV = v + (dt./2).*Ax;
     if midV >0
@@ -67,13 +66,12 @@ while(abs(dist)<l)
         f_x(2) = min(f_x(1),f_x(2));
         f_x(3) = min(f_x(3),f_x(4));
         f_x(4) = min(f_x(3),f_x(4));
-        
         % Calculate acceleration
-        Frr = sum(f_z)*Crr;
+        
         Fd = 0.5*(midV^2)*Cd*A*rho;
         % Lateral tire drag
         FxLatTireDrag = sum(f_y*slipAngle);
-        NetFx = sum(f_x) + Fd + Frr + FxLatTireDrag;
+        NetFx = sum(f_x) + Fd + FxLatTireDrag;
         Ax = -NetFx/mass;
         
         v = v + Ax*dt;

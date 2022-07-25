@@ -8,7 +8,7 @@ optim_number = Parameters.optim_number; %Discretization number
 
 %% Code
 track_1 = importdata(track);
-t_radius = track_1.data(:,2)./3.281; %[M]
+t_radius = abs(track_1.data(:,2)./3.281); %[M]
 t_length = track_1.data(:,3)./3.281; %[M]
 
 vel_0 = vel_start; %initial speed

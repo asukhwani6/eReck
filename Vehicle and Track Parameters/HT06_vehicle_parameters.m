@@ -14,7 +14,7 @@ Parameters.L = 1.53; %wheelbase
 Parameters.b = 0.78; %distance from CG to rear axle 51% front
 
 Parameters.motorType = 'Emrax 208';
-Parameters.TmRear = 140; %motor torque
+Parameters.TmRear = 120; %motor torque
 Parameters.TmFront = 0; %motor torque
 
 Parameters.derateSpeedRatioRear = 0.9; % derate begins after derateRatio*maxMotorRPM
@@ -27,7 +27,7 @@ derateFunRear = @linearDerate; % define function handle
 Parameters.derateRear = derateFunRear; % define function handle used to derate Rear motor torque
 Parameters.derateFront = derateFunFront; % define function handle used to derate Front motor torque
 
-Parameters.rearRegen = 10;
+Parameters.rearRegen = 0;
 Parameters.frontRegen = 0;
 
 Parameters.overrideEfficiencyRear = 0; % ONLY SET THIS VALUE IF YOU WISH TO OVERRIDE EMRAX 208 EFFICIENCY MAPPING
@@ -38,12 +38,8 @@ Parameters.maxPower = 80000; % W
 Parameters.mRearTopSpeed = 7000; % Rear Torque drops to 0 when motor rpm exceeds this value
 Parameters.mFrontTopSpeed = realmax; % Rear Torque drops to 0 when motor rpm exceeds this value
 
-Parameters.nRear = 4.44; %gear ratio
-Parameters.nFront = 4.44; %gear ratio
-
-Parameters.Im = 0.0441 + 0.02; %motor + motor output shaft rotational inertia 
-
-Parameters.Ip = 0.144; %powertrain rotational inertia (2x wheels + diff)
+Parameters.nRear = 4.4; %gear ratio
+Parameters.nFront = 4.4; %gear ratio
 
 Parameters.r = 0.203; %tire radius
 
