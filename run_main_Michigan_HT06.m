@@ -42,7 +42,8 @@ hold on
 
 plot(data_distance,speed_new);
 
-plot(sim_distance*data_distance(end)/sim_distance(end),v(1:end-1),'.-');
+% plot(sim_distance*data_distance(end)/sim_distance(end),v(1:end-1),'.-');
+plot(sim_distance,v(1:end-1),'.-');
 legend('Raw Data HT06', 'Sim Data HT06');
 grid on
 box on
