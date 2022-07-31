@@ -1,15 +1,15 @@
 %% USAGE:
+% Script uses FSAE Nevada track data (generated in solidworks by following
+% competition track map as reference)
 
 %% Lap Sim
 track = "FSAE2021NevadaEndurance.csv";
-% HT05_vehicle_parameters;
-% HT06_vehicle_parameters;
-HT07_AMK_hubs_vehicle_parameters;
+HT05_vehicle_parameters;
 
 vel_start = 12; %Starting velocity
 
-Parameters.driverFactorLong = .8;
-Parameters.driverFactorLat = .8;
+Parameters.driverFactorLong = .6;
+Parameters.driverFactorLat = 1;
 
 % RUN LAP SIMULATION
 
@@ -43,21 +43,14 @@ hold on
 plot(data_distance,speed_new);
 
 plot(sim_distance*1.028,v(1:end-1),'.-');
-legend('Raw Data HT05', 'Sim Data HT05', 'Sim Data HT06','Sim Data Hub Motor Architecture');
+legend('Raw Data HT05', 'Sim Data HT05');
 grid on
 box on
 xlabel('Distance [m]');
-%xlim([0 t(end)])
 ylabel('Velocity [m/s]');
 xlim([0 max(sim_distance*1.028)])
 ylim([0 30])
 
-figure
-hold on
-plot(t,v)
-for i = 1:length(locations)-1
-    xline(t(locations(i)));
-end
 %% Plot g-g diagram
 % figure
 hold on
@@ -65,10 +58,6 @@ plot(Ay/9.81,Ax/9.81,'.')
 xlabel('Lateral Acceleration (g)')
 ylabel('Longitudinal Acceleration (g)')
 title('g-g Diagram FSAE Nevada 2021 Simulated')
-%vAdj = v(1:6222)';
-%AyAdj = Ay'/9.81;
-%AxAdj = Ax'/9.81;
-%scatter3(AyAdj,AxAdj,vAdj)
 
 %% Accel Script Test
 % HT07_AMK_hubs_vehicle_parameters;
