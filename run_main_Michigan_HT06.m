@@ -8,7 +8,7 @@ HT06_vehicle_parameters;
 
 vel_start = 13.6; %Starting velocity
 
-Parameters.driverFactorLong = .6;
+Parameters.driverFactorLong = .7;
 Parameters.driverFactorLat = 1;
 
 % RUN LAP SIMULATION
@@ -41,9 +41,9 @@ figure
 hold on
 
 plot(data_distance,speed_new);
+plot(sim_distance*data_distance(end)/sim_distance(end),v(1:end-1),'.-');
+% plot(sim_distance,v(1:end-1),'.-');
 
-% plot(sim_distance*data_distance(end)/sim_distance(end),v(1:end-1),'.-');
-plot(sim_distance,v(1:end-1),'.-');
 legend('Raw Data HT06', 'Sim Data HT06');
 grid on
 box on
@@ -58,7 +58,18 @@ figure
 hold on
 
 load('FSAEMichigan2022_HT06Data.mat');
-plot(movmean(S.lat_accel(:,2),5)/9.81,movmean(S.long_accel(:,2),5)/9.81,'.')
+
+t_accel = S.lat_accel(:,1);
+lat_accel = S.lat_accel(:,2);
+long_accel = S.long_accel(:,2);
+mask = (t_accel >= 372600) & (t_accel(:,1) <= 439400);
+
+t_accel = t_accel(mask);
+lat_accel = lat_accel(mask);
+long_accel = long_accel(mask);
+
+plot(movmean(lat_accel,5)/9.81,movmean(long_accel,5)/9.81,'.')
+
 plot(Ay/9.81,Ax/9.81,'.')
 xlabel('Lateral Acceleration (g)')
 ylabel('Longitudinal Acceleration (g)')
@@ -68,8 +79,9 @@ legend({'HT06 Collected Data','HT06 Simulated Data'})
 %% Accel Script Test
 % HT07_AMK_hubs_vehicle_parameters;
 HT06_vehicle_parameters;
-Parameters.mass = Parameters.AccumulatorMass + Parameters.curbMass + Parameters.driverMass;
-Parameters.mass = Parameters.mass;
+Parameters.TmRear = 120;
+Parameters.mass = 222;
+Parameters.driverFactorLong = .86;
 
 accelLength = 75; %m
 entry_vel = 0; %start from standstill
@@ -100,7 +112,7 @@ ylabel('Motor Speed (RPM)')
 fprintf('Acceleration Simulated Time: %.3f\n',accel_t(end))
 
 %% Brake Script Test
-HT07_AMK_hubs_vehicle_parameters;
+HT06_vehicle_parameters;
 
 [tVec, vVec, AxVec, AyVec, FxVec, FzVec] = braking(realmax,100,30,0,Parameters);
 
@@ -113,7 +125,7 @@ xlabel('Time (s)');
 ylabel('Speed (m/s)');
 
 %% Skidpad Script Test
-HT07_AMK_hubs_vehicle_parameters;
+HT06_vehicle_parameters;
 % skidpad radius estimated from cone radius + 1/2 track width + some
 % clearance to the cones
 rSkidpad = 8.5; % m

@@ -60,8 +60,8 @@ end
 
 %fprintf("%d track sections replaced\n",count)
 
-if ct ~=1
-    eventIndices = eventIndices(1:ct);
+if ct > 1
+eventIndices = eventIndices(1:ct);
     for i = 1:length(updatedLocations)
         eventIndices = [eventIndices, eventIndices(end) + updatedLocations(i)];
     end
@@ -75,6 +75,9 @@ if ct ~=1
         addTime = timeReplace(ind(end));
         timeReplace(ind(end)+1:end) = timeReplace(ind(end)+1:end) + addTime;
     end
+else
+    % If ct <= 1, initial velocity too high? idk how to fix this edge case
+    error('Simulation not capable of handling this situation. Try a lower initial velocity')
 end
 
 startReplaceInd = eventIndices(ct);
