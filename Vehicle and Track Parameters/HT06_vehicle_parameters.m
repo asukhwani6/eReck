@@ -35,11 +35,11 @@ Parameters.overrideEfficiencyFront = 0; % ONLY SET THIS VALUE IF YOU WISH TO OVE
 
 Parameters.maxPower = 80000; % W
 
-Parameters.mRearTopSpeed = 7000; % Rear Torque drops to 0 when motor rpm exceeds this value
+Parameters.mRearTopSpeed = 5800; % Rear Torque drops to 0 when motor rpm exceeds this value - 5800 used to simulate lift and coast
 Parameters.mFrontTopSpeed = realmax; % Rear Torque drops to 0 when motor rpm exceeds this value
 
 Parameters.nRear = 4.4; %gear ratio
-Parameters.nFront = 4.4; %gear ratio
+Parameters.nFront = realmax; %gear ratio
 
 Parameters.r = 0.203; %tire radius
 
@@ -84,7 +84,7 @@ Parameters.cellV = 4.2; %Cell Voltage
 
 Parameters.cellMaxI = 270; %Max Cell Current [A]
 
-Parameters.driverFactorLong = 1; % driver is not as good as sim
+Parameters.driverFactorLong = 0.7; % driver is not as good as sim
 Parameters.driverFactorLat = 1; % driver is not as good as sim
 Parameters.tireFactor = 0.5; % tires are not as good as TTC data
 

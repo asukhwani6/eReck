@@ -3,13 +3,10 @@
 % motor speed data to estimate instantaneous radius and exte
 
 %% Lap Sim
-track = "FSAE2022MichiganEndurance.csv";
+track = "FSAE2022MichiganEnduranceRollingMinimum4.csv";
 HT06_vehicle_parameters;
 
 vel_start = 13.6; %Starting velocity
-
-Parameters.driverFactorLong = .7;
-Parameters.driverFactorLat = 1;
 
 % RUN LAP SIMULATION
 
@@ -35,13 +32,13 @@ time_new = vehicle_speed(mask,1) - min(vehicle_speed(mask,1));
 speed_new = vehicle_speed(mask,2);
 
 data_distance = cumtrapz(time_new, speed_new);
-sim_distance = cumtrapz(t(2:end),v(2:end));
+sim_distance = cumtrapz(t,v);
 
 figure
 hold on
 
 plot(data_distance,speed_new);
-plot(sim_distance*data_distance(end)/sim_distance(end),v(1:end-1),'.-');
+plot(sim_distance*data_distance(end)/sim_distance(end),v,'.-');
 % plot(sim_distance,v(1:end-1),'.-');
 
 legend('Raw Data HT06', 'Sim Data HT06');
@@ -81,7 +78,7 @@ legend({'HT06 Collected Data','HT06 Simulated Data'})
 HT06_vehicle_parameters;
 Parameters.TmRear = 120;
 Parameters.mass = 222;
-Parameters.driverFactorLong = .86;
+Parameters.driverFactorLong = .87;
 
 accelLength = 75; %m
 entry_vel = 0; %start from standstill
