@@ -7,6 +7,7 @@ track = "FSAE2022MichiganEnduranceRollingMinimum4.csv";
 HT06_vehicle_parameters;
 
 vel_start = 13.6; %Starting velocity
+Parameters.mRearTopSpeed = 7000;
 
 % RUN LAP SIMULATION
 
@@ -54,31 +55,27 @@ ylim([0 33])
 figure
 hold on
 
-load('FSAEMichigan2022_HT06Data.mat');
+% load('FSAEMichigan2022_HT06Data.mat');
 
 t_accel = S.lat_accel(:,1);
 lat_accel = S.lat_accel(:,2);
 long_accel = S.long_accel(:,2);
-mask = (t_accel >= 372600) & (t_accel(:,1) <= 439400);
-
-t_accel = t_accel(mask);
-lat_accel = lat_accel(mask);
-long_accel = long_accel(mask);
 
 plot(movmean(lat_accel,5)/9.81,movmean(long_accel,5)/9.81,'.')
-
 plot(Ay/9.81,Ax/9.81,'.')
+
 xlabel('Lateral Acceleration (g)')
 ylabel('Longitudinal Acceleration (g)')
-title('g-g Diagram FSAE Nevada 2021 Simulated')
+title('g-g Diagram FSAE Michigan 2022 Simulated')
 legend({'HT06 Collected Data','HT06 Simulated Data'})
 
 %% Accel Script Test
 % HT07_AMK_hubs_vehicle_parameters;
 HT06_vehicle_parameters;
-Parameters.TmRear = 120;
-Parameters.mass = 222;
-Parameters.driverFactorLong = .87;
+Parameters.mRearTopSpeed = 7000;
+Parameters.TmRear = 160;
+Parameters.driverFactorLong = 1;
+Parameters.mass = Parameters.AccumulatorMass + Parameters.curbMass + Parameters.driverMass;
 
 accelLength = 75; %m
 entry_vel = 0; %start from standstill

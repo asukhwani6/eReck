@@ -14,7 +14,7 @@ Parameters.L = 1.53; %wheelbase
 Parameters.b = 0.78; %distance from CG to rear axle 51% front
 
 Parameters.motorType = 'Emrax 208';
-Parameters.TmRear = 120; %motor torque
+Parameters.TmRear = 100; %motor torque setting was set to 120 Nm, but data shows 100Nm was maximum achieved
 Parameters.TmFront = 0; %motor torque
 
 Parameters.derateSpeedRatioRear = 0.9; % derate begins after derateRatio*maxMotorRPM
@@ -84,7 +84,7 @@ Parameters.cellV = 4.2; %Cell Voltage
 
 Parameters.cellMaxI = 270; %Max Cell Current [A]
 
-Parameters.driverFactorLong = 0.7; % driver is not as good as sim
+Parameters.driverFactorLong = 0.85; % driver is not as good as sim
 Parameters.driverFactorLat = 1; % driver is not as good as sim
 Parameters.tireFactor = 0.5; % tires are not as good as TTC data
 
