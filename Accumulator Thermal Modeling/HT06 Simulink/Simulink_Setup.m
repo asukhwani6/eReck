@@ -1,12 +1,12 @@
 load MichiganEnduranceOutput.mat;
 S.dc_bus_current(:,1) = S.dc_bus_current(:,1)./1000;
 current = S.dc_bus_current;
-figure(1)
-plot(S.dc_bus_current(:,1), S.dc_bus_current(:,2))
-figure(2)
+% figure(1)
+% plot(S.dc_bus_current(:,1), S.dc_bus_current(:,2))
+% figure(2)
 temp = S.BMS_average_temperature;
 amTemp = S.average_temperature;
-plot(temp(:,1), temp(:,2),'.', amTemp(:,1), amTemp(:,2),'.');
+% plot(temp(:,1), temp(:,2),'.', amTemp(:,1), amTemp(:,2),'.');
 
 
 tabResis = 0.00009; %Ohm
@@ -57,12 +57,12 @@ for i = 1:length(current(:,1))
 
 end
 currentInterp = interp1(current(:,1),current(:,2),time)
-hold on
-figure(3)
+% hold on
+% figure(3)
 %time1 = linspace(0,2500,100000)
-plot(time,currentInterp)
+% plot(time,currentInterp)
 % plot(S.dc_bus_current(:,1), S.dc_bus_current(:,2))
-figure(4)
+% figure(4)
 
 S.BMS_average_temperature(:,1) = S.BMS_average_temperature(:,1)./1000;
 for i = 1:length(S.BMS_average_temperature(:,1))
@@ -72,8 +72,11 @@ for i = 1:length(S.BMS_average_temperature(:,1))
 end
 temp = S.BMS_average_temperature;
 tempInterp = interp1(temp(:,1),temp(:,2),time)
-plot(time,tempInterp)
+% plot(time,tempInterp)
 adjustedTime = time - time(1);
 figure(5)
-plot(adjustedTime,tempInterp)
-
+% plot(adjustedTime,tempInterp)
+AH = 18;
+SOC0 = 1;
+dOCVdT = [-0.15, -0.025, 0.025, 0.175, .175, 0.15, 0.04, 0.03, 0.03, 0, -0.1]/1000;
+SOC = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0];
