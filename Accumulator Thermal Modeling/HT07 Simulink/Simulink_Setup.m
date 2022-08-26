@@ -1,4 +1,4 @@
-load MichiganEnduranceOutput.mat;
+ load MichiganEnduranceOutput.mat;
 S.dc_bus_current(:,1) = S.dc_bus_current(:,1)./1000;
 current = S.dc_bus_current;
 % figure(1)
