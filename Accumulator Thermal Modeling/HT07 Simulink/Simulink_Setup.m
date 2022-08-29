@@ -8,8 +8,31 @@ temp = S.BMS_average_temperature;
 amTemp = S.average_temperature;
 % plot(temp(:,1), temp(:,2),'.', amTemp(:,1), amTemp(:,2),'.');
 
-load energyMeterEnduranceTimeAdjusted.mat;
-current = emCurrent;
+load Result_254272161.mat;
+%Result.currentAcc(:,1) = Result.currentAcc(:,1)./1000;
+current = Result.currentAcc;
+time = Result.t;
+timeNew = [time];
+currentNew = [current];
+for i = 1:10
+    timeNew = [timeNew; time + timeNew(end) + 1];
+    currentNew = [currentNew; current];
+end
+currentNew = [currentNew; 0; 0];
+timeNew = [timeNew; timeNew(end) + 1 ; timeNew(end) + 300];
+for i = 1:11
+    timeNew = [timeNew; time + timeNew(end) + 1];
+    currentNew = [currentNew; current];
+end
+current = currentNew;
+time = timeNew;
+figure(1)
+plot(time, current)
+
+%load energyMeterEnduranceTimeAdjusted.mat;
+%current = emCurrent;
+emTime = time;
+emCurrent = current;
 
 tabResis = 0.00009; %Ohm
 cellInternalResis = .0018; %Ohm
@@ -23,7 +46,8 @@ cSt = 500; %J/kg*K
 cCell = 500; %J/kg*K
 cCu = 387; %J/kg*K
 
-mCell = 0.325; %kg
+nCell = 126;
+mCell = 0.253; %kg
 mFin = 0.0247; %kg
 mInterconnect = 0.0034; %kg
 mInterconnectBolt = 0.00092; %kg
@@ -31,9 +55,9 @@ mInterconnectNut = 0.00058; %kg
 mInterconnectBoltTotal = mInterconnectBolt * 2;
 mInterconnectNutTotal = mInterconnectNut * 2;
 mCover = 1.5; %kg
-mCoverAdj = mCover/84; %kg/cell
-mContainer = 4; %kg
-mContainerAdj = mContainer/84; %kg/cell
+mCoverAdj = mCover/nCell; %kg/cell
+mContainer = 5; %kg
+mContainerAdj = mContainer/nCell; %kg/cell
 
 tabLength = 0.03; %m
 tabThickness = 0.0002; %m
@@ -51,8 +75,8 @@ interfacialResistance = 0.01; %m^2*K/W LOW CONFIDENCE
 contactArea = 0.002; %m^2
 R_cb = interfacialResistance/contactArea; %K/W
 
-baseplateArea = 0.25; %m^2
-convectionArea = baseplateArea/84; %m^2
+baseplateArea = 0.3; %m^2
+convectionArea = baseplateArea/nCell; %m^2
 
 
 
@@ -95,7 +119,7 @@ tempInterp = interp1(temp(:,1),temp(:,2),time)
 adjustedTime = time - time(1);
 figure(5)
 % plot(adjustedTime,tempInterp)
-AH = 17;
+AH = 14;
 SOC0 = 1;
 dOCVdT = [-0.15, -0.025, 0.025, 0.175, .175, 0.15, 0.04, 0.03, 0.03, 0, -0.1]/1000;
 SOC = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0];
