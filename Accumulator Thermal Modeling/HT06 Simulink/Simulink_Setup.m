@@ -20,7 +20,7 @@ cAl = 904; %J/kg*K
 cSt = 500; %J/kg*K
 % C_t = cAl*mInterconnect + 2*cSt*(mInterconnectBolt + mInterconnectNut) + cellTabThermalMass; %J/K
 % cellTabThermalMass = pCu*cellTabVolume*cCu;
-cCell = 500; %J/kg*K
+cCell = 700; %J/kg*K
 cCu = 387; %J/kg*K
 
 mCell = 0.325; %kg
@@ -46,14 +46,15 @@ pCu = 8960; %kg/m^3
 cellTabVolume = tabLength*tabArea;
 cellTabThermalMass = pCu*cellTabVolume;
 
-
 interfacialResistance = 0.01; %m^2*K/W LOW CONFIDENCE
 contactArea = 0.002; %m^2
 R_cb = interfacialResistance/contactArea; %K/W
 
 baseplateArea = 0.25; %m^2
 convectionArea = baseplateArea/84; %m^2
-
+thermistorContactArea = 3E-05; %m^2
+boltedJointThermalRes = 10000; %W/m^2-K
+thermistorContactRes = 1/(thermistorContactArea*boltedJointThermalRes); %K/W
 
 
 
@@ -90,12 +91,12 @@ for i = 1:length(S.BMS_average_temperature(:,1))
 
 end
 temp = S.BMS_average_temperature;
-tempInterp = interp1(temp(:,1),temp(:,2),time)
+tempInterp = interp1(temp(:,1),temp(:,2),time);
 % plot(time,tempInterp)
 adjustedTime = time - time(1);
 figure(5)
 % plot(adjustedTime,tempInterp)
-AH = 17;
+AH = 18.7;
 SOC0 = 1;
 dOCVdT = [-0.15, -0.025, 0.025, 0.175, .175, 0.15, 0.04, 0.03, 0.03, 0, -0.1]/1000;
 SOC = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0];
