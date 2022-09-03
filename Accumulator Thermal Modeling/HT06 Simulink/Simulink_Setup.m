@@ -20,7 +20,7 @@ cAl = 904; %J/kg*K
 cSt = 500; %J/kg*K
 % C_t = cAl*mInterconnect + 2*cSt*(mInterconnectBolt + mInterconnectNut) + cellTabThermalMass; %J/K
 % cellTabThermalMass = pCu*cellTabVolume*cCu;
-cCell = 700; %J/kg*K
+cCell = 625; %J/kg*K
 cCu = 387; %J/kg*K
 
 mCell = 0.325; %kg
@@ -35,7 +35,7 @@ mCoverAdj = mCover/84; %kg/cell
 mContainer = 4; %kg
 mContainerAdj = mContainer/84; %kg/cell
 
-tabLength = 0.03; %m
+tabLength = 0.025; %m
 tabThickness = 0.0002; %m
 tabWidth = 0.025; %m
 tabArea = tabWidth*tabThickness; %m^2
@@ -52,8 +52,8 @@ R_cb = interfacialResistance/contactArea; %K/W
 
 baseplateArea = 0.25; %m^2
 convectionArea = baseplateArea/84; %m^2
-thermistorContactArea = 3E-05; %m^2
-boltedJointThermalRes = 10000; %W/m^2-K
+thermistorContactArea = 1.5E-05; %m^2
+boltedJointThermalRes = 100000; %W/m^2-K
 thermistorContactRes = 1/(thermistorContactArea*boltedJointThermalRes); %K/W
 
 
@@ -86,19 +86,24 @@ end
 
 S.BMS_average_temperature(:,1) = S.BMS_average_temperature(:,1)./1000;
 for i = 1:length(S.BMS_average_temperature(:,1))
-
     S.BMS_average_temperature(i,1) = S.BMS_average_temperature(i,1) + i/100000000;
-
 end
 temp = S.BMS_average_temperature;
 tempInterp = interp1(temp(:,1),temp(:,2),time);
+S.average_temperature(:,1) = S.average_temperature(:,1)./1000;
+for i = 1:length(S.average_temperature(:,1))
+    S.average_temperature(i,1) = S.average_temperature(i,1) + i/100000000;
+end
+accAirTemp = S.average_temperature;
+accAirTempInterp = interp1(accAirTemp(:,1),accAirTemp(:,2),time);
 % plot(time,tempInterp)
 adjustedTime = time - time(1);
 figure(5)
 % plot(adjustedTime,tempInterp)
-AH = 18.7;
+AH = 17.5;
 SOC0 = 1;
-dOCVdT = [-0.15, -0.025, 0.025, 0.175, .175, 0.15, 0.04, 0.03, 0.03, 0, -0.1]/1000;
+% dOCVdT = [-0.15, -0.025, 0.025, 0.175, .175, 0.15, 0.04, 0.03, 0.03, 0, -0.1]/1000;
+dOCVdT = [-0.47, -0.3, -0.3, -0.2, .1, 0.1, 0.15, 0.04, 0.03, 0, -0.2]/1000;
 SOC = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0];
 
 load('IRvsCellTempFitMichiganEndurance2022.mat','IRvsCellTemp')
