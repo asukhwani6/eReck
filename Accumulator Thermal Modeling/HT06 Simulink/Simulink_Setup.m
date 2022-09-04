@@ -11,6 +11,13 @@ amTemp = S.average_temperature;
 load energyMeterEnduranceTimeAdjusted.mat;
 current = emCurrent;
 
+% Convert motor RPM to linear speed:
+nGear = 4.4;
+rTire = 0.2; %m
+S.vehicle_speed(:,1) = S.motor_speed(:,1)./1000;
+rpm2rads = 0.10472;
+S.vehicle_speed(:,2) = (S.motor_speed(:,2)./nGear)*rpm2rads*rTire; %m/s
+
 tabResis = 0.00009; %Ohm
 cellInternalResis = .0018; %Ohm
 
@@ -20,7 +27,7 @@ cAl = 904; %J/kg*K
 cSt = 500; %J/kg*K
 % C_t = cAl*mInterconnect + 2*cSt*(mInterconnectBolt + mInterconnectNut) + cellTabThermalMass; %J/K
 % cellTabThermalMass = pCu*cellTabVolume*cCu;
-cCell = 625; %J/kg*K
+cCell = 900; %J/kg*K
 cCu = 387; %J/kg*K
 
 mCell = 0.325; %kg
@@ -76,6 +83,10 @@ for i = 1:length(current(:,1))
     current(i,1) = current(i,1) + i/100000000;
 
 end
+
+for i = 1:length(S.vehicle_speed(:,1))
+    S.vehicle_speed(i,1) = S.vehicle_speed(i,1) + i/100000000;
+end
 % currentInterp = interp1(current(:,1),current(:,2),time)
 % hold on
 % figure(3)
@@ -100,10 +111,10 @@ accAirTempInterp = interp1(accAirTemp(:,1),accAirTemp(:,2),time);
 adjustedTime = time - time(1);
 figure(5)
 % plot(adjustedTime,tempInterp)
-AH = 17.5;
+AH = 18.6;
 SOC0 = 1;
 % dOCVdT = [-0.15, -0.025, 0.025, 0.175, .175, 0.15, 0.04, 0.03, 0.03, 0, -0.1]/1000;
-dOCVdT = [-0.47, -0.3, -0.3, -0.2, .1, 0.1, 0.15, 0.04, 0.03, 0, -0.2]/1000;
+dOCVdT = [-0.52, -0.97, -0.4, -0.4, -0.2, 0, 0, 0, -0.1, -0.4, 0]/1000;
 SOC = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0];
 
 load('IRvsCellTempFitMichiganEndurance2022.mat','IRvsCellTemp')

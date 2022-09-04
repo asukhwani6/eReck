@@ -1,18 +1,25 @@
-load Result_254272161.mat;
+load Endurance9-3-22.mat;
+
 current = Result.currentAcc;
 time = Result.t;
-for i = 1:10
-    current = [current;Result.currentAcc];
-    time = [time;time(end) + Result.t + 0.001];
-end
-current = [current;0;0];
-time = [time; time(end) + 0.001; time(end) + 300];
-for i = 1:11
-    current = [current;Result.currentAcc];
-    time = [time;time(end) + Result.t + 0.001];
-end
-time = [time;time(end) + 0.001];
-current = [current;0];
+velocity = Result.v;
+current(diff(time)==0) = [];
+velocity(diff(time)==0) = [];
+time(diff(time)==0) = [];
+
+
+% for i = 1:10
+%     current = [current;Result.currentAcc];
+%     time = [time;time(end) + Result.t + 0.001];
+% end
+% current = [current;0;0];
+% time = [time; time(end) + 0.001; time(end) + 300];
+% for i = 1:11
+%     current = [current;Result.currentAcc];
+%     time = [time;time(end) + Result.t + 0.001];
+% end
+% time = [time;time(end) + 0.001];
+% current = [current;0];
 
 tabResis = 0.00009; %Ohm
 
@@ -21,7 +28,7 @@ cAl = 904; %J/kg*K
 cSt = 500; %J/kg*K
 % C_t = cAl*mInterconnect + 2*cSt*(mInterconnectBolt + mInterconnectNut) + cellTabThermalMass; %J/K
 % cellTabThermalMass = pCu*cellTabVolume*cCu;
-cCell = 625; %J/kg*K
+cCell = 900; %J/kg*K
 cCu = 387; %J/kg*K
 
 mCell = 0.252; %kg
@@ -68,7 +75,7 @@ adjustedTime = timeBase - timeBase(1);
 AH = 14;
 SOC0 = 1;
 % dOCVdT = [-0.15, -0.025, 0.025, 0.175, .175, 0.15, 0.04, 0.03, 0.03, 0, -0.1]/1000;
-dOCVdT = [-0.47, -0.3, -0.3, -0.2, .1, 0.1, 0.15, 0.04, 0.03, 0, -0.2]/1000;
+dOCVdT = [-0.52, -0.97, -0.4, -0.4, -0.2, 0, 0, 0, -0.1, -0.4, 0]/1000;
 SOC = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0];
 
 load('IRvsCellTempFitMichiganEndurance2022.mat','IRvsCellTemp')
