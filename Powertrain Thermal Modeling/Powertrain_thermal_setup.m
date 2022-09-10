@@ -1,8 +1,11 @@
-load Result_254272161.mat
+load Endurance9-3-22.mat
 motorHeatGen = Result.qMotor(:,4);
+time = Result.t;
+mask = diff(time) == 0;
+time(mask) = [];
+motorHeatGen(mask) = [];
+timeEnd = time(end);
 mcuHeatGen = motorHeatGen;
-timeEnd = length(motorHeatGen);
-time = (1:timeEnd);
 Tamb = 33; % C
 
 % Motor
