@@ -1,11 +1,14 @@
 load Endurance9-3-22.mat
 motorHeatGen = Result.qMotor(:,4);
+mcuHeatGen = Result.qInverter(:,4);
+velocity = Result.v;
 time = Result.t;
 mask = diff(time) == 0;
 time(mask) = [];
 motorHeatGen(mask) = [];
+velocity(mask) = [];
 timeEnd = time(end);
-mcuHeatGen = motorHeatGen;
+mcuHeatGen(mask) = [];
 Tamb = 33; % C
 
 % Motor
@@ -43,12 +46,15 @@ massMCUColdPlate = 2.942; %kg
 % Pg 27 diagram
 lengthPlateFlow = .339 * 4 + .030 * 3; % m
 coldPlateDiameter = 10E-3; %m
-plateFrictionFactor = 3.2e-6; %m
-Kcorner = 1.1;
-Kin = .2;
-Kout = .2;
+plateRoughness = 3.2e-6; %m
+plateRelRoughness = plateRoughness/coldPlateDiameter;
+ReGuess = 3000;
+plateFrictionFactor = 64/ReGuess;
+Kcorner = 1.1; % estimated from Page 440 fundamentals-of-fluid-mechanics-8th-edition
+Kin = .2; % need to check against valve specifications
+Kout = .2; % need to check against valve specifications
 Ktot = 6 * Kcorner + Kin + Kout;
-leq = Ktot * coldPlateDiameter ./ plateFrictionFactor
+leq = Ktot * coldPlateDiameter ./ plateFrictionFactor;
 coldPlateFlowArea = lengthPlateFlow * pi * coldPlateDiameter;
 coldPlateFlowVol = pi * (coldPlateDiameter ./ 2) .^ 2 .* lengthPlateFlow;
 % Tubing
@@ -58,8 +64,30 @@ A = pi * (d / 2) .^ 2;
 % Environment 
 Tambient =  33; % C
 % Radiator
-areaRadiator = .1; %m
+radiatorSurfaceRoughness = 3.2e-6;
+radiatorCoreHeight = 6.5 * 25.4 / 1000; % m
+radiatorCoreWidth = 5.1 * 25.4 / 1000; % m
+radiatorArea = radiatorCoreWidth .* radiatorCoreHeight; % m
+finHeight = .0045; % m
+finWidth = 0.0508; % m
+finDepth = 0.0015; % m
+waterChannelOuterHeight = 0.002; % m
+finRowNumber = radiatorCoreHeight / (finHeight + waterChannelOuterHeight);
+finColumnNumber = radiatorCoreWidth / finDepth;
+airChannelNumber = finRowNumber * finColumnNumber;
+coldFluidSA = airChannelNumber * (2 * finDepth * finWidth + 2 * finHeight * finWidth); % m ^ 2
+airChannelHydraulicDiameter = 2 * finDepth * finHeight / (finDepth + finHeight); % m
 
+
+waterChannelInnerHeight = 0.0015; % m
+waterChannelInnerWidth = finWidth - 0.0005; % m
+waterChannelArea = waterChannelInnerHeight * waterChannelInnerWidth; % m ^ 2
+waterChannelHydraulicDiameter = 2 * waterChannelInnerWidth * waterChannelInnerHeight / (waterChannelInnerHeight + waterChannelInnerWidth); % m
+waterChannelRowNumber = finRowNumber + 1; 
+waterChannelLength = radiatorCoreWidth; % m
+waterChannelVolumeTot = waterChannelArea * waterChannelLength * waterChannelRowNumber; % m ^ 3
+waterChannelSA = waterChannelLength * 2 * (waterChannelInnerHeight + waterChannelInnerWidth); % m ^ 2
+waterChannelSATot = waterChannelSA * waterChannelRowNumber; % m ^ 2
 
 % ?examples
 % sscfluids_ev_battery_cooling
