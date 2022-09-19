@@ -1,4 +1,4 @@
-load Endurance9-3-22.mat
+load Result_1800679663.mat
 motorHeatGen = Result.qMotor(:,4);
 mcuHeatGen = Result.qInverter(:,4);
 velocity = Result.v;
