@@ -7,6 +7,8 @@ else
 
     if (rpm > 6000)
         mappedRPM = 122;
+    elseif (rpm <= 0)
+        mappedRPM = 1;
     else
         mappedRPM = ceil(122*rpm/6000);
     end
@@ -17,9 +19,12 @@ else
         mappedTorque = 75 - ceil(74*torque/159);
     end
 
-    if (torque == 0)
+    if (torque <= 0)
         efficiency = 1;
     else
+        if torque > 60
+            hhhh= 1;
+        end
         efficiency = graphData.graphData(mappedTorque, mappedRPM) / 100;
     end
 

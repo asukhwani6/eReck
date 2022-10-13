@@ -1,14 +1,33 @@
-% load Result_1800679663.mat
-% motorHeatGen = Result.qMotor(:,4);
-% mcuHeatGen = Result.qInverter(:,4);
-% velocity = Result.v;
-% time = Result.t;
-% mask = diff(time) == 0;
-% time(mask) = [];
-% motorHeatGen(mask) = [];
-% velocity(mask) = [];
-% timeEnd = time(end);
-% mcuHeatGen(mask) = [];
+load FSAEMichigan2022_HT06Data.mat
+effData = load('graphDataEmrax208.mat');
+gearRatio = 4.4;
+tireRadius = 0.2; % m
+
+motorTorque = S.torque_feedback;
+motorTorque(:,1) = motorTorque(:,1)/1000;
+motorSpeedRPM = S.motor_speed;
+motorSpeedRPM(:,1) = motorSpeedRPM(:,1)/1000;
+motorSpeedRPM(:,2) = -motorSpeedRPM(:,2);
+motorTorque(:,2) = -motorTorque(:,2);
+
+motorTorque = uniqueData(motorTorque);
+motorSpeedRPM = uniqueData(motorSpeedRPM);
+
+time = linspace(min(motorTorque(:,1)),max(motorTorque(:,1)-1000),30000);
+timeEnd = time(end);
+interpTorque = interp1(motorTorque(:,1),motorTorque(:,2),time);
+interpSpeedRPM= interp1(motorSpeedRPM(:,1),motorSpeedRPM(:,2),time);
+interpSpeedRadS = interpSpeedRPM * 0.10472;
+for i = 1:length(interpTorque)
+[efficiency(i)] = efficiencyEmrax208(interpSpeedRPM(i), interpTorque(i), effData, 0);
+end
+motorPower = interpTorque.*interpSpeedRadS;
+motorHeatGen = (1-efficiency).*motorPower;
+mcuHeatGen = (1-0.97)*interpTorque.*interpSpeedRadS;
+velocity = (interpSpeedRadS./gearRatio).*tireRadius;
+
+motorHeatEnergy = cumtrapz(time,motorHeatGen);
+
 Tamb = 33; % C
 
 % Motor Emrax 208
@@ -16,7 +35,6 @@ Tamb = 33; % C
 massMotor = 9.4; %kg
 cAl = 904; %J/kg*K
 % 
-
 
 % MCU
 massMCU = 6.75; %kg
@@ -63,18 +81,21 @@ finRowNumber = radiatorCoreHeight / (finHeight + waterChannelOuterHeight);
 finColumnNumber = radiatorCoreWidth / finDepth;
 airChannelNumber = finRowNumber * finColumnNumber;
 coldFluidSA = airChannelNumber * (2 * finDepth * finWidth + 2 * finHeight * finWidth); % m ^ 2
-airChannelHydraulicDiameter = 2 * finDepth * finHeight / (finDepth + finHeight); % m
+airChannelHydraulicDiameter = (2 * finDepth * finHeight / (finDepth + finHeight)); % m
+airChannelHydraulicDiameterTotal = airChannelNumber*airChannelHydraulicDiameter;
 
 
 waterChannelInnerHeight = 0.0015; % m
 waterChannelInnerWidth = finWidth - 0.0005; % m
-waterChannelArea = waterChannelInnerHeight * waterChannelInnerWidth; % m ^ 2
-waterChannelHydraulicDiameter = 2 * waterChannelInnerWidth * waterChannelInnerHeight / (waterChannelInnerHeight + waterChannelInnerWidth); % m
 waterChannelRowNumber = finRowNumber + 1; 
+waterChannelArea = waterChannelInnerHeight * waterChannelInnerWidth; % m ^ 2
+waterChannelAreaTotal = waterChannelArea*waterChannelRowNumber;
+waterChannelHydraulicDiameter = 2 * waterChannelInnerWidth * waterChannelInnerHeight / (waterChannelInnerHeight + waterChannelInnerWidth); % m
+waterChannelHydraulicDiameterTotal = waterChannelHydraulicDiameter*waterChannelRowNumber;
 waterChannelLength = radiatorCoreWidth; % m
-waterChannelVolumeTot = waterChannelArea * waterChannelLength * waterChannelRowNumber; % m ^ 3
+waterChannelVolumeTotal = waterChannelArea * waterChannelLength * waterChannelRowNumber; % m ^ 3
 waterChannelSA = waterChannelLength * 2 * (waterChannelInnerHeight + waterChannelInnerWidth); % m ^ 2
-waterChannelSATot = waterChannelSA * waterChannelRowNumber; % m ^ 2
+waterChannelSATotal = waterChannelSA * waterChannelRowNumber; % m ^ 2
 
 % ?examples
 % sscfluids_ev_battery_cooling
