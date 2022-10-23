@@ -2,6 +2,7 @@ load FSAEMichigan2022_HT06Data.mat
 effData = load('graphDataEmrax208.mat');
 gearRatio = 4.4;
 tireRadius = 0.2; % m
+load pumpData.mat
 
 motorTorque = S.torque_feedback;
 motorTorque(:,1) = motorTorque(:,1)/1000;
@@ -96,6 +97,19 @@ waterChannelLength = radiatorCoreWidth; % m
 waterChannelVolumeTotal = waterChannelArea * waterChannelLength * waterChannelRowNumber; % m ^ 3
 waterChannelSA = waterChannelLength * 2 * (waterChannelInnerHeight + waterChannelInnerWidth); % m ^ 2
 waterChannelSATotal = waterChannelSA * waterChannelRowNumber; % m ^ 2
+
+waterChannelVelTesting = 8.9 * 1.66667e-5 / waterChannelAreaTotal; % m/s
+waterDensity = 997; % kg / m ^ 3
+waterDynamicViscocityRoom = 0.0010016; % Pa*s
+radReGuessTesting = waterDensity * waterChannelVelTesting * waterChannelHydraulicDiameter ./ waterDynamicViscocityRoom;% JUST GUESS
+radFrictionFactor = 64/radReGuessTesting; % CHECK AGAIN
+KSharpEntrance = 0.5;
+KwaterChannelExit = 0.45;
+KSlightlyRoundedEntrance = 0.2;
+
+KtotRadiator = (KSharpEntrance + KwaterChannelExit) + KSlightlyRoundedEntrance * 2;
+leqRadiatorMinor = (KtotRadiator * waterChannelHydraulicDiameterTotal ./ radFrictionFactor);
+
 
 % ?examples
 % sscfluids_ev_battery_cooling
