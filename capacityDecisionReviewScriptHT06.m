@@ -4,7 +4,7 @@ clc
 close all
 
 % Load HT06 Simulation Result
-load('results_HT06_Michigan_Derate.mat')
+load('results_HT06_Barnesville.mat')
 % Load HT06 Data
 load('FSAEMichigan2022_HT06Data.mat')
 % Load Energy Meter Data
