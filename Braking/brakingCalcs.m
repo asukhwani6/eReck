@@ -38,8 +38,15 @@ frontWeightBrake = mass .* g .* .5086 - rearWeightTransfer .* g;
 FXrear = (0.5 * (-0.001379*(rearWeightBrake .* 0.224809).^2 + 3.542 * (rearWeightBrake .* 0.224809) + 7.922)) ./ 0.224809; % equation in lbf so convert to lbf and back to N, 0.5 scaling factor to convert the sandpaper roller data to asphalt
 FXfront = (0.5 * (-0.001379*(frontWeightBrake .* 0.224809).^2 + 3.542* (frontWeightBrake .* 0.224809) + 7.922)) ./ 0.224809; % equation in lbf so convert to lbf and back to N, 0.5 scaling factor to convert the sandpaper roller data to asphalt
 
-totalDownForce = 383.02 + 435.68;
-CoP = 0.870;
+% totalDownForce = 383.02 + 435.68; ht06
+% CoP = 0.870; ht06
+CLA = 3.8;
+initialVelocity = 29.5; % m /s
+rhoAir = 1.204;% kg/m^3
+totalDownForce = CLA * initialVelocity .^ 2 * .5 .* rhoAir;
+% CoP = 0.870;
+CoP = 0.50;
+
 FrontDownforce = totalDownForce * (CoP ./ wheelBase);
 RearDownforce = totalDownForce * (1 - (CoP ./ wheelBase));
 
