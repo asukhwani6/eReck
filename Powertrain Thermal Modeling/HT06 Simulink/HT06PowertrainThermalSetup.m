@@ -2,7 +2,7 @@ load FSAEMichigan2022_HT06Data.mat
 effData = load('graphDataEmrax208.mat');
 gearRatio = 4.4;
 tireRadius = 0.2; % m
-load pumpData.mat
+load EBP40_Pump_Data.mat
 
 motorTorque = S.torque_feedback;
 motorSpeedRPM = S.motor_speed;
@@ -72,31 +72,29 @@ tubeFrictionFactor = 64/tubeReGuess; % CHECK AGAIN
 
 tubeLengthPumpToMCU =  17.33 * 25.4 / 1000; %m BMRS 1x right angle, 1x straight
 KtotLengthPumpToMCU = K90 + KStraight;
-% leqPumpToMCU = KtotLengthPumpToMCU * d ./ tubeFrictionFactor;
-leqPumpToMCU = 0;
+leqPumpToMCU = KtotLengthPumpToMCU * d ./ tubeFrictionFactor;
 
 tubeLengthMCUToMotor =  4  * 25.4 / 1000;% m BMRS 2x right angle connector
 KtotMCUToMotor = K90 * 2;
-% leqMCUToMotor = KtotMCUToMotor * d ./ tubeFrictionFactor;
-leqMCUToRadiator = 0;
+leqMCUToMotor = KtotMCUToMotor * d ./ tubeFrictionFactor;
 
 tubeLengthMotorToRadiator = 27.6875  * 25.4 / 1000; % m BMRS 1x right angle, 1x straight​
 KtotMotorToRadiator = K90 + KStraight;
-% leqMotorToRadiator = KtotMotorToRadiator * d ./ tubeFrictionFactor;
-leqMotorToRadiator = 0;
+leqMotorToRadiator = KtotMotorToRadiator * d ./ tubeFrictionFactor;
 
 % ESTIMATE - NEED TO MEASURE AGAIN
 tubeLengthRadiatorToPump = 0.3; % m 
 
 % Environment 
 Tambient =  26; % C
-% Radiator
+%% Radiator
 radiatorSurfaceRoughness = 3.2e-6;
 radiatorCoreHeight = 6.5 * 25.4 / 1000; % m
 radiatorCoreWidth = 5.1 * 25.4 / 1000; % m
-radiatorShroudWidth = 0.15; % m
-radiatorShroudHeight = 0.15; % m
-radiatorArea = radiatorShroudWidth .* radiatorShroudHeight; % m
+radiatorShroudWidth = radiatorCoreWidth + 0.05; % m
+radiatorShroudHeight = radiatorCoreHeight + 0.025; % m
+radiatorCoreArea = radiatorCoreWidth * radiatorCoreHeight; % m^2
+radiatorShroudArea = radiatorShroudWidth * radiatorShroudHeight; % m^2
 finHeight = .0045; % m
 finWidth = 0.038; % m
 finDepth = 0.0015; % m
