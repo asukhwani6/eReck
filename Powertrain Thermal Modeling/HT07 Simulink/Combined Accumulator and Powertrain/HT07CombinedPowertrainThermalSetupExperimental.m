@@ -1,5 +1,7 @@
 clear
 
+HT07_Simulink_Setup;
+
 %% Environment and properties
 Tamb = 26; % C
 cAl = 904; %J/kg*K
@@ -8,7 +10,7 @@ waterDensity = 997; % kg / m^3
 
 %% Pump and Radiator Initialization
 
-HT06_Radiator_Init
+HT06_Radiator_HT07Experimental_Init
 load EBP40_Pump_Data.mat
 % Scale pump capacity to adjust for experimental data vs pump curve given
 % by manufacturer: "Pump Max Flowrate Test"​ slide in shorturl.at/BOU46
@@ -52,7 +54,7 @@ mcuHeatGen = [mcuHeatGen;0];
 timeEnd = time(end);
 
 mask = velocity < 0.25;
-velocity(mask) = 0.25;
+velocity(mask) = 4/radiator.aerodynamicFactor;
 
 motorHeatEnergyRear = cumtrapz(time,motorRearHeatGen);
 motorHeatEnergyFront = cumtrapz(time,motorFrontHeatGen);
@@ -85,10 +87,26 @@ leqMotorToRadiator = KtotMotorToRadiator * d ./ tubeFrictionFactor;
 % ESTIMATE - NEED TO MEASURE AGAIN
 tubeLengthRadiatorToPump = 0.3; % m 
 
+% Accumulator
+% number of channels
+accChannelNum = 8;
+
+accChannelWidth = 0.002; % m
+accChannelHeight = 0.01; % m
+accChannelLength = 1.3; % m
+accChannelCooledPerimeter = accChannelNum * (accChannelWidth+2*accChannelHeight);
+accChannelViscousPerimeter = 2*accChannelNum*(accChannelWidth + accChannelHeight);
+accChannelFlowArea = accChannelNum*accChannelWidth*accChannelHeight;
+accChannelHydraulicDiameter = 4*accChannelFlowArea/(2*accChannelViscousPerimeter);
+accChannelAbsoluteRoughness = 3.2e-6;
+
+dittusBoelterA = 0.023;
+dittusBoelterAadjAccChannel = dittusBoelterA*accChannelCooledPerimeter/accChannelViscousPerimeter;
+
 % Motor AMK
 massMotor = 3.5; %kg (50% stated mass)
 coolingJacketHalfCircleDiameter = 0.01; % m
-coolingJacketLength = 1.5; % m
+coolingJacketLength = 0.5; % m
 coolingJacketFlowArea = pi*(coolingJacketHalfCircleDiameter^2)/8; % m^3
 coolingJacketFlowVolume = coolingJacketFlowArea*coolingJacketLength; % m^3
 coolingJacketHydraulicDiameter = 4*coolingJacketFlowArea/((1+pi)*coolingJacketHalfCircleDiameter);
