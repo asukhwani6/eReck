@@ -1,16 +1,29 @@
 clear
-load EnduranceLapSim-9-15-22.mat
+
+%% Environment and properties
+Tamb = 26; % C
+cAl = 904; %J/kg*K
+waterKinematicViscosity40C = 0.0000010533; % m^2 / s
+waterDensity = 997; % kg / m^3
+
+%% Pump and Radiator Initialization
+
+HT06_Radiator_Init
 load EBP40_Pump_Data.mat
+% Scale pump capacity to adjust for experimental data vs pump curve given
+% by manufacturer: "Pump Max Flowrate Test"​ slide in shorturl.at/BOU46
 pumpCapacity = pumpCapacity/2.5;
 
+load EnduranceLapSim-9-15-22.mat
+
 Result.qMotor(:,1) = mean(Result.qMotor(:,1))*ones(length(Result.qMotor(:,1)),1);
-motorRearHeatGen = Result.qMotor(:,1);
+motorRearHeatGen = 0;
 Result.qMotor(:,3) = mean(Result.qMotor(:,3))*ones(length(Result.qMotor(:,3)),1);
-motorFrontHeatGen = Result.qMotor(:,3);
+motorFrontHeatGen = 0;
 Result.qInverter(:,1) = mean(Result.qInverter(:,1))*ones(length(Result.qInverter(:,1)),1);
-mcuHeatGen = Result.qInverter(:,1);
-velocity = Result.v;
-time = Result.t;
+mcuHeatGen = 0;
+velocity = 0;
+time = 0;
 
 motorRearHeatGen(diff(time)==0) = [];
 motorFrontHeatGen(diff(time)==0) = [];
@@ -18,7 +31,7 @@ mcuHeatGen(diff(time)==0) = [];
 velocity(diff(time)==0) = [];
 time(diff(time)==0);
 
-for i = 1:10
+for i = 1:11
     motorRearHeatGen = [motorRearHeatGen;Result.qMotor(:,1)];
     motorFrontHeatGen = [motorFrontHeatGen;Result.qMotor(:,3)];
     mcuHeatGen = [mcuHeatGen;Result.qInverter(:,1)];
@@ -50,8 +63,6 @@ velocity(mask) = 0.25;
 motorHeatEnergyRear = cumtrapz(time,motorRearHeatGen);
 motorHeatEnergyFront = cumtrapz(time,motorFrontHeatGen);
 
-Tamb = 33; % C
-
 % Tubing
 d = 0.00914; % AR-06-HTP hose inner diameter m
 A = pi * (d / 2) .^ 2;
@@ -59,11 +70,10 @@ A = pi * (d / 2) .^ 2;
 K90 = 0.5; % CHECK AGAIN
 KStraight = 0.08;% CHECK AGAIN
 tubeRoughness = 3.2e-6; %m% CHECK AGAIN
-kinematicViscosity40C = 0.0000010533; % m^2/s
 volumeFlowRateGuess = 5; % L/min CHECK AGAIN
 volumeFlowRateGuess = volumeFlowRateGuess/60000; % m^3/s
 velocityFlowRate = volumeFlowRateGuess/A; % m/s
-tubeReGuess = velocityFlowRate*d/kinematicViscosity40C;
+tubeReGuess = velocityFlowRate*d/waterKinematicViscosity40C;
 tubeFrictionFactor = 64/tubeReGuess; % CHECK AGAIN
 
 tubeLengthPumpToMCU =  17.33 * 25.4 / 1000; %m BMRS 1x right angle, 1x straight
@@ -83,11 +93,20 @@ tubeLengthRadiatorToPump = 0.3; % m
 
 % Motor AMK
 massMotor = 3.5; %kg (50% stated mass)
-cAl = 904; %J/kg*K
 coolingJacketHalfCircleDiameter = 0.01; % m
 coolingJacketLength = 1.5; % m
-coolingJacketFlowArea = pi*(coolingJacketHalfCircleDiameter^2)/8;
+coolingJacketFlowArea = pi*(coolingJacketHalfCircleDiameter^2)/8; % m^3
+coolingJacketFlowVolume = coolingJacketFlowArea*coolingJacketLength; % m^3
 coolingJacketHydraulicDiameter = 4*coolingJacketFlowArea/((1+pi)*coolingJacketHalfCircleDiameter);
+coolingJacketAbsoluteRoughness = 15e-6; % LOW CONFIDENCE
+coolingJacketCooledArea = coolingJacketLength*coolingJacketHalfCircleDiameter; % m^2
+
+% Need to reduce Nusselt number in motor jacket by ratio of viscous
+% friction perimeter to cooled perimeter. Adjust dittus boelter A
+% coefficient in Nu = a*(Re^b)*(Pr^c)
+
+dittusBoelterA = 0.023;
+dittusBoelterAadj = dittusBoelterA*(coolingJacketHalfCircleDiameter/((1+pi)*coolingJacketHalfCircleDiameter));
 
 % MCU
 coldPlateMassMCU = 2.94; %kg (COOLING PLATE MASS PER DOUBLE INVERTER SET)
@@ -96,51 +115,6 @@ mcuColdPlateFlowArea = (mcuColdPlateDiameter^2)*pi/4; % m^2
 mcuColdPlateLength = 1.2; % m
 kTotMCUColdPlate = K90*6;
 leqMCU = kTotMCUColdPlate * mcuColdPlateDiameter./tubeFrictionFactor;
-
-% Environment 
-Tambient =  33; % C
-%% Radiator
-radiatorSurfaceRoughness = 3.2e-6;
-radiatorCoreHeight = 6.5 * 25.4 / 1000; % m
-radiatorCoreWidth = 5.125 * 25.4 / 1000; % m
-radiatorShroudWidth = radiatorCoreWidth + 0.1; % m
-radiatorShroudHeight = radiatorCoreHeight + 0.075; % m
-radiatorCoreArea = radiatorCoreWidth * radiatorCoreHeight; % m^2
-radiatorShroudArea = radiatorShroudWidth * radiatorShroudHeight; % m^2
-finHeight = .0046; % m
-finWidth = 0.042; % m
-finDepth = 0.0018; % m
-waterChannelOuterHeight = 0.0017; % m
-finRowNumber = radiatorCoreHeight / (finHeight + waterChannelOuterHeight);
-finColumnNumber = radiatorCoreWidth / finDepth;
-airChannelNumber = finRowNumber * finColumnNumber;
-coldFluidSA = airChannelNumber * (2 * finDepth * finWidth + 2 * finHeight * finWidth); % m ^ 2
-airChannelHydraulicDiameter = (2 * finDepth * finHeight / (finDepth + finHeight)); % m
-
-% Water Channels
-waterChannelInnerHeight = waterChannelOuterHeight - 0.0006;
-waterChannelInnerWidth = finWidth - 0.002; % m
-
-waterChannelRowNumber = finRowNumber - 1; 
-waterChannelArea = waterChannelInnerHeight * waterChannelInnerWidth; % m ^ 2
-waterChannelAreaTotal = waterChannelArea*waterChannelRowNumber;
-waterChannelHydraulicDiameter = 4 * waterChannelArea / (2*waterChannelInnerHeight + 2*waterChannelInnerWidth); % m
-waterChannelLength = radiatorCoreWidth + 0.01; % m Add 10mm because of stick through on welded panels
-waterChannelVolumeTotal = waterChannelArea * waterChannelLength * waterChannelRowNumber; % m ^ 3
-waterChannelSA = waterChannelLength * 2 * (waterChannelInnerHeight + waterChannelInnerWidth); % m ^ 2
-waterChannelSATotal = waterChannelSA * waterChannelRowNumber; % m ^ 2
-
-waterChannelVelTesting = 8.9 * 1.66667e-5 / (waterChannelAreaTotal/2); % m/s
-waterDensity = 997; % kg / m ^ 3
-waterDynamicViscocityRoom = 0.0010016; % Pa*s
-radReGuessTesting = waterDensity * waterChannelVelTesting * waterChannelHydraulicDiameter ./ waterDynamicViscocityRoom;% JUST GUESS
-radFrictionFactor = 64/radReGuessTesting; % CHECK AGAIN
-KSharpEntrance = 0.8;
-KwaterChannelExit = 0.8;
-KSlightlyRoundedEntrance = 0.2;
-
-KtotRadiator = 2*((KSharpEntrance + KwaterChannelExit) + KSlightlyRoundedEntrance * 2);
-leqRadiatorMinor = (KtotRadiator * waterChannelHydraulicDiameter ./ radFrictionFactor);
 
 % ?examples
 % sscfluids_ev_battery_cooling

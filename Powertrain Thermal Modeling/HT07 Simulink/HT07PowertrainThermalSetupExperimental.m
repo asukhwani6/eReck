@@ -8,7 +8,7 @@ waterDensity = 997; % kg / m^3
 
 %% Pump and Radiator Initialization
 
-HT06_Radiator_Experimental_Init
+HT06_Radiator_HT07Experimental_Init
 load EBP40_Pump_Data.mat
 % Scale pump capacity to adjust for experimental data vs pump curve given
 % by manufacturer: "Pump Max Flowrate Test"​ slide in shorturl.at/BOU46
