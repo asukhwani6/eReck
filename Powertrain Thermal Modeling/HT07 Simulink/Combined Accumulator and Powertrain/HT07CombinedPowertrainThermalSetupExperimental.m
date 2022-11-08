@@ -1,4 +1,4 @@
-clear
+% clear
 
 HT07_Simulink_Setup;
 

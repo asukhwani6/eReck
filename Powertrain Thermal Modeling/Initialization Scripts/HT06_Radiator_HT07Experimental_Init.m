@@ -3,7 +3,8 @@ radiator.aerodynamicFactor = 0.45;
 
 radiator.Mass = 1.1; % kg
 radiator.SurfaceRoughness = 3.2e-6;
-radiator.CoreHeight = 2*(6.5 * 25.4 / 1000); % m
+% radiator.CoreHeight = 2*(6.5 * 25.4 / 1000); % m
+
 radiator.CoreWidth = 5.125 * 25.4 / 1000; % m
 radiator.ShroudWidth = radiator.CoreWidth + 0.1; % m
 radiator.ShroudHeight = radiator.CoreHeight + 0.075; % m

@@ -63,7 +63,7 @@ cellTabThermalMass = pCu*cellTabVolume*nCell;
 
 % TUNED VARIABLE REASONABLE CONFIDENCE
 % interfacialResistance = 0.004; %m^2*K/W LOW CONFIDENCE
-interfacialResistance = 0.002;
+interfacialResistance = 0.003;
 contactArea = 0.002*nCell; %m^2
 R_cb = interfacialResistance/contactArea; %K/W
 
