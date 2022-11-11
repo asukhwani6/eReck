@@ -88,10 +88,10 @@ leqMotorToRadiator = KtotMotorToRadiator * d ./ tubeFrictionFactor;
 tubeLengthRadiatorToPump = 0.3; % m 
 
 % Accumulator
-% number of channels
-accChannelNum = 8;
+% % number of channels
+% accChannelNum = 8;
 
-accChannelWidth = 0.002; % m
+% accChannelWidth = 0.002; % m
 accChannelHeight = 0.01; % m
 accChannelLength = 1.3; % m
 accChannelCooledPerimeter = accChannelNum * (accChannelWidth+2*accChannelHeight);

@@ -1,8 +1,10 @@
 clear
-radiatorHeightMultiplier = linspace(0.5,1.5,10);
-for j = 1:length(radiatorHeightMultiplier)
+channelNum = linspace(1,5,10);
+for j = 1:length(channelNum)
 
-radiator.CoreHeight = radiatorHeightMultiplier(j)*(6.5 * 25.4 / 1000); % m
+accChannelWidth = 0.008; % m
+radiator.CoreHeight = (6.5 * 25.4 / 1000); % m
+accChannelNum = channelNum(j);
 HT07CombinedPowertrainThermalSetupExperimental
 
 out = sim('HT07CombinedPowertrainThermalModelv2IsolatedMotors.slx');
@@ -21,3 +23,12 @@ maxRadAirOutTempColdLoop(j) = out.componentTemps.Data(end,11);
 disp('Step Complete')
 
 end
+%% Plotting
+figure
+plot(channelNum,maxCellTabTemp)
+hold on
+plot(channelNum,maxMcuTempRear)
+xlabel('Number of Acc Water Channels')
+ylabel('Component Temperatures (C)')
+legend({'Max Cell Tab Temperature','Max MCU Cold Plate Temperature'})
+title('Cold Loop Component Temperatures - Accumulator Channel Number Study',['Accumulator Channel Width: ',num2str(accChannelWidth*1000),' mm'])
