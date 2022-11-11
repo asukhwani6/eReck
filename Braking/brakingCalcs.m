@@ -1,4 +1,4 @@
-x = 0:10000;
+x = 0:3000;
 fx = -0.001379 * x .^ 2 + 3.542 * x + 7.922;
 [fxmax, fxmaxI] = max(fx);
 plot(x, fx)
@@ -26,11 +26,11 @@ ylabel('Fx (N)');
 wheelBase = 1.55; % m
 frontBore = 0.6250 * 25.4E-3;  % Tilton 78-Series  5/8"
 rearBore = 7/8 * 25.4E-3; % Tilton 78-Series  7/8"
-mass = 271;
-pedalRatio = 7.1875;
-rearBrakeRadius = (70.52E-3 + 86.43E-3) ./ 2; 
+mass = 271; % CHECK
+pedalRatio = 7.1875; % CHECK CATIA
+rearBrakeRadius = (70.52E-3 + 86.43E-3) ./ 2; %CHECK RADIUS
 frontBrakeRadius = (70.52E-3 + 86.43E-3) ./ 2;
-cgHeight = 0.197;
+cgHeight = 0.197; 
 frontWeightFrac = 0.501;%
 CLA = 3.8;
 % initialVelocity = 29.5; % m /s
@@ -38,7 +38,7 @@ initialVelocity = 20.5; % m /s
 % initialVelocity = 2.5; % m /s
 rhoAir = 1.204;% kg/m^3
 totalDownForce = CLA * initialVelocity .^ 2 * .5 .* rhoAir;
-CoP = 0.50;
+CoP = 0.50; % TARGET
 
 frontCylinderArea = (frontBore ./ 2) .^ 2 .* pi;
 rearCylinderArea = (rearBore ./ 2) .^ 2 .* pi;
@@ -46,13 +46,13 @@ g = 9.81;
 rearBrakeCaliperArea = pi * (1.25 .* 25.4 .* 1E-3) ^ 2 ./ 4;% Wilwood GP200 
 frontBrakeCaliperArea = pi * (1.25 .* 25.4 .* 1E-3) ^ 2 ./ 4;% Wilwood GP200 
 
-brakePadFriction = 0.37; % 150-14407k Sintered Metallic
+brakePadFriction = 0.37; % 150-14407k Sintered Metallic (MINIMUM)
 loadedTireRadius = 416.56E-3 ./2 ;
 
 % maxDecel = 2.3141;
 % maxDecel = 1.57;
 % maxDecel = 2.4765;
-maxDecel = 1.9905;
+maxDecel = 1.9905; %gS
 
 rearWeightTransfer = cgHeight .* mass .* -maxDecel ./ wheelBase;
 rearWeightBrake = mass .* g .* (1 - frontWeightFrac) + rearWeightTransfer .* g;
@@ -65,14 +65,14 @@ FXfront = (0.5 * (-0.001379*(frontWeightBrake .* 0.224809).^2 + 3.542* (frontWei
 FrontDownforce = totalDownForce * (CoP ./ wheelBase);
 RearDownforce = totalDownForce * (1 - (CoP ./ wheelBase));
 
-FXrearAero = (0.5*(-0.001379*((rearWeightBrake + RearDownforce) .* 0.224809).^2 + 3.542* ((rearWeightBrake + RearDownforce) .* 0.224809) + 7.922)) ./ 0.224809  % equation in lbf so convert to lbf and back to N, 0.5 scaling factor to convert the sandpaper roller data to asphalt
-FXfrontAero = (0.5*(-0.001379*((frontWeightBrake + FrontDownforce) .* 0.224809).^2 + 3.542* ((frontWeightBrake + FrontDownforce) .* 0.224809) + 7.922)) ./ 0.224809 % equation in lbf so convert to lbf and back to N, 0.5 scaling factor to convert the sandpaper roller data to asphalt
+FXrearAero = (0.5*(-0.001379*((rearWeightBrake + RearDownforce) .* 0.224809).^2 + 3.542* ((rearWeightBrake + RearDownforce) .* 0.224809) + 7.922)) ./ 0.224809;  % equation in lbf so convert to lbf and back to N, 0.5 scaling factor to convert the sandpaper roller data to asphalt
+FXfrontAero = (0.5*(-0.001379*((frontWeightBrake + FrontDownforce) .* 0.224809).^2 + 3.542* ((frontWeightBrake + FrontDownforce) .* 0.224809) + 7.922)) ./ 0.224809; % equation in lbf so convert to lbf and back to N, 0.5 scaling factor to convert the sandpaper roller data to asphalt
 syms idealBias
-inputForceAero = FXfrontAero .* (frontCylinderArea .* loadedTireRadius ./ (pedalRatio .* frontBrakeCaliperArea .* 2 .* frontBrakeRadius .* brakePadFriction)) .* (1 ./ idealBias) == FXrearAero .* (rearCylinderArea .* loadedTireRadius ./ (pedalRatio .* rearBrakeCaliperArea .* 2 .* rearBrakeRadius .* brakePadFriction)) .* (1 ./ (1 - idealBias))
-inputForce = FXfront .* (frontCylinderArea .* loadedTireRadius ./ (pedalRatio .* frontBrakeCaliperArea .* 2 .* frontBrakeRadius .* brakePadFriction)) .* (1 ./ idealBias) == FXrear .* (rearCylinderArea .* loadedTireRadius ./ (pedalRatio .* rearBrakeCaliperArea .* 2 .* rearBrakeRadius .* brakePadFriction)) .* (1 ./ (1 - idealBias))
+inputForceAero = FXfrontAero .* (frontCylinderArea .* loadedTireRadius ./ (pedalRatio .* frontBrakeCaliperArea .* 2 .* frontBrakeRadius .* brakePadFriction)) .* (1 ./ idealBias) == FXrearAero .* (rearCylinderArea .* loadedTireRadius ./ (pedalRatio .* rearBrakeCaliperArea .* 2 .* rearBrakeRadius .* brakePadFriction)) .* (1 ./ (1 - idealBias));
+inputForce = FXfront .* (frontCylinderArea .* loadedTireRadius ./ (pedalRatio .* frontBrakeCaliperArea .* 2 .* frontBrakeRadius .* brakePadFriction)) .* (1 ./ idealBias) == FXrear .* (rearCylinderArea .* loadedTireRadius ./ (pedalRatio .* rearBrakeCaliperArea .* 2 .* rearBrakeRadius .* brakePadFriction)) .* (1 ./ (1 - idealBias));
 
-Saero = solve(inputForceAero) % ideal bias including aero effects
-S = solve(inputForce) % ideal bias w/o aero effects
+Saero = solve(inputForceAero); % ideal bias including aero effects
+S = solve(inputForce);% ideal bias w/o aero effects
 
 brakeBias = double(Saero)
 % brakeBias = .53
