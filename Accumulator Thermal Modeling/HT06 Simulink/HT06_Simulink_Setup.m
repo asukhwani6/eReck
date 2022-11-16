@@ -25,7 +25,7 @@ cCu = 387; %J/kg*K
 
 % Cell specific heat capacity - TUNED VARIABLE REASONABLE CONFIDENCE FOR
 % HT06 CELL
-cCell = 950; %J/kg*K 
+cCell = 970; %J/kg*K 
 
 mCell = 0.325; %kg
 mFin = 0.0247; %kg
@@ -53,7 +53,7 @@ cellTabThermalMass = pCu*cellTabVolume;
 
 % TUNED VARIABLE REASONABLE CONFIDENCE
 % interfacialResistance = 0.004; %m^2*K/W
-interfacialResistance = 0.002;
+interfacialResistance = 0.004;
 contactArea = 0.002; %m^2
 R_cb = interfacialResistance/contactArea; %K/W
 

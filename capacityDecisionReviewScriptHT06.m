@@ -4,7 +4,7 @@ clc
 close all
 
 % Load HT06 Simulation Result
-load('results_HT06_Barnesville.mat')
+load('results_HT06_Michigan_Derate.mat')
 % Load HT06 Data
 load('FSAEMichigan2022_HT06Data.mat')
 % Load Energy Meter Data
@@ -70,7 +70,7 @@ end
 testTorqueMotorAdj = interp1(testTorqueTime,testTorqueData,emTimeBase);
 testSpeedRadSec = (testSpeedMPS/Parameters.r)*Parameters.nRear;
 testPowerMechMotorAdj = testTorqueMotorAdj.*testSpeedRadSec;
-vehicleMass = 250;
+vehicleMass = 240;
 
 % IMU torque model
 testLongAccelAdj = interp1(testLongAccelTime,testLongAccelData,emTimeBase);
