@@ -1,15 +1,12 @@
 clear
 HT07CombinedPowertrainThermalSetup
-radiator.aerodynamicFactor = radiator.aerodynamicFactor*1.5;
 
-radiatorThicknessMultiplier = linspace(0.5,2,8);
-% Assume jacket diameter scales with length to achieve constant area
-motor.CoolingJacketCooledArea = 0.0150;
+radiatorThickness = [0.042,0.055,0.068,0.087];
 
-for j = 1:length(radiatorThicknessMultiplier)
+for j = 1:length(radiatorThickness)
 
     % Overwrite channel number and cooresponding calculated values
-    radiator.finWidth = radiatorThicknessMultiplier(j)*0.042; % m
+    radiator.finWidth = radiatorThickness(j); % m
     radiator = dualPassRadiatorInit(radiator);
 
     try
@@ -36,10 +33,10 @@ for j = 1:length(radiatorThicknessMultiplier)
 end
 %% Plotting
 figure
-plot(radiatorThicknessMultiplier,maxCellTabTemp)
+plot(radiatorThickness,maxCellTabTemp)
 hold on
-plot(radiatorThicknessMultiplier,maxMcuTempRear)
-xlabel('Radiator Thickness Multiplier')
+plot(radiatorThickness,maxMcuTempRear)
+xlabel('Radiator Thickness (m)')
 ylabel('Component Temperatures (C)')
 legend({'Max Accumulator Temp','Max MCU Temp'})
 title('Hot Loop Component Temperatures - Radiator Thickness Study')

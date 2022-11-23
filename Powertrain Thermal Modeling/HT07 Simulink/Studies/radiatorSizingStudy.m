@@ -1,6 +1,5 @@
 clear
 HT07CombinedPowertrainThermalSetup
-radiator.aerodynamicFactor = radiator.aerodynamicFactor*1.5;
 
 radiatorHeightMultVec = linspace(0.5,1.5,6);
 radiatorWidthMultVec = linspace(0.5,1.5,6);
