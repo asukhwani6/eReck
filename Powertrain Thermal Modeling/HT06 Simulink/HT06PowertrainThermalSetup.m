@@ -6,12 +6,28 @@ cAl = 904; %J/kg*K
 waterKinematicViscosity40C = 0.0000010533; % m^2 / s
 waterDensity = 997; % kg / m^3
 
-%% Pump and Radiator Initialization
-HT06_Radiator_Init;
+%% Pump Initialization
+
 load EBP40_Pump_Data.mat
 % Scale pump capacity to adjust for experimental data vs pump curve given
 % by manufacturer: "Pump Max Flowrate Test"​ slide in shorturl.at/BOU46
 pumpCapacity = pumpCapacity/2.5;
+
+%% Radiator Initialization
+
+radiator.aerodynamicFactor = 0.45; % HT07 AERODYNAMIC SIMULATIONS ESTIMATE 50% IMPROVEMENT IN AIR MASS FLOW THROUGH RADIATOR
+radiator.Mass = 1.1; % kg
+radiator.SurfaceRoughness = 3.2e-6;
+radiator.CoreHeight = (6.5 * 25.4 / 1000);
+radiator.CoreWidth = (5.125 * 25.4 / 1000); % m
+radiator.finHeight = .0046; % m
+radiator.finWidth = 0.042; % m HT07 RADIATOR PLANNED TO USE 55 mm CORE THICKNESS INSTEAD OF 42 mm
+radiator.finDepth = 0.0018; % m
+radiator.waterChannelOuterHeight = 0.0017; % m
+radiator.waterVolumeL = 0.54; % L
+radiator.wallThermalResistance = 5e-6;
+
+radiator = dualPassRadiatorInit(radiator);
 
 %% Vehicle Initialization
 load FSAEMichigan2022_HT06Data.mat
