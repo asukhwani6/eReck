@@ -10,13 +10,13 @@ waterDensity = 997; % kg / m^3
 
 %% Radiator Initialization
 
-radiator.aerodynamicFactor = 1.5*0.45;
+radiator.aerodynamicFactor = 1.5*0.45; % HT07 AERODYNAMIC SIMULATIONS ESTIMATE 50% IMPROVEMENT IN AIR MASS FLOW THROUGH RADIATOR
 radiator.Mass = 1.1; % kg
 radiator.SurfaceRoughness = 3.2e-6;
 radiator.CoreHeight = (6.5 * 25.4 / 1000);
 radiator.CoreWidth = (5.125 * 25.4 / 1000); % m
 radiator.finHeight = .0046; % m
-radiator.finWidth = 0.042; % m
+radiator.finWidth = 0.055; % m HT07 RADIATOR PLANNED TO USE 55 mm CORE THICKNESS INSTEAD OF 42 mm
 radiator.finDepth = 0.0018; % m
 radiator.waterChannelOuterHeight = 0.0017; % m
 radiator.waterVolumeL = 0.54; % L
@@ -30,7 +30,6 @@ load EBP40_Pump_Data.mat
 % Scale pump capacity to adjust for experimental data vs pump curve given
 % by manufacturer: "Pump Max Flowrate Test"​ slide in shorturl.at/BOU46
 pumpCapacity = pumpCapacity/2.5;
-
 load EnduranceLapSim-9-15-22.mat
 
 %% Data Initialization
@@ -105,6 +104,13 @@ leqMotorToRadiator = KtotMotorToRadiator * d ./ tubeFrictionFactor;
 % ESTIMATE - NEED TO MEASURE AGAIN
 tubeLengthRadiatorToPump = 0.3; % m 
 
+%% Motor Tubing
+tubeLengthPumpToRearMotors = 0.5; % m
+tubeLengthRearMotorInletOutlet = 0.5; % m
+tubeLengthFrontMotorInletOutlet = 0.5; % m
+tubeLengthFrontMotorToRearMotor = 1.5; % m
+tubeLengthRearMotorToRadiator = 0.5; % m
+
 %% Accumulator
 accChannel.Num = 3;
 accChannel.Width = 0.008; % m
@@ -116,9 +122,23 @@ accChannel = accChannelInit(accChannel);
 
 %% Motor AMK
 motor.Mass = 3.5; %kg (50% stated mass)
-motor.CoolingJacketHalfCircleDiameter = 0.015; % m
 motor.CoolingJacketLength = 1; % m
 motor.CoolingJacketAbsoluteRoughness = 15e-6; % LOW CONFIDENCE
+
+% UNCOMMENT FOR RECTANGULAR COOLING CHANNEL GEOMETRY
+motor.CoolingJacketHeight = 0.003; % m
+motor.CoolingJacketWidth = 0.01; % m
+motor.CoolingJacketCooledArea = motor.CoolingJacketLength*motor.CoolingJacketWidth; % m^2
+motor.CoolingJacketFlowArea = motor.CoolingJacketHeight*motor.CoolingJacketWidth; % m^2
+motor.CoolingJacketHydraulicDiameter = 2*motor.CoolingJacketFlowArea/(motor.CoolingJacketWidth+motor.CoolingJacketHeight); % m
+motor.CooledPerimeter = motor.CoolingJacketWidth;
+motor.ViscousPerimeter = 2*(motor.CoolingJacketWidth + motor.CoolingJacketHeight);
+
+% UNCOMMENT FOR HALF CIRCLE COOLING CHANNEL GEOMETRY
+% motor.CoolingJacketHalfCircleDiameter = 0.015; % m
+% motor.CoolingJacketFlowArea = pi*(motor.CoolingJacketHalfCircleDiameter^2)/8; % m^3
+% motor.CoolingJacketHydraulicDiameter = 4*motor.CoolingJacketFlowArea/((1+pi)*motor.CoolingJacketHalfCircleDiameter);
+% motor.CoolingJacketCooledArea = motor.CoolingJacketLength*motor.CoolingJacketHalfCircleDiameter; % m^2
 
 motor = motorJacketInit(motor);
 
