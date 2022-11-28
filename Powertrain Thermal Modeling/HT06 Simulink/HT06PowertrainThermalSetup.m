@@ -15,7 +15,7 @@ pumpCapacity = pumpCapacity/2.5;
 
 %% Radiator Initialization
 
-radiator.aerodynamicFactor = 0.45; % HT07 AERODYNAMIC SIMULATIONS ESTIMATE 50% IMPROVEMENT IN AIR MASS FLOW THROUGH RADIATOR
+radiator.aerodynamicFactor = 0.45; % HT06 TUNED VARIABLE
 radiator.Mass = 1.1; % kg
 radiator.SurfaceRoughness = 3.2e-6;
 radiator.CoreHeight = (6.5 * 25.4 / 1000);
