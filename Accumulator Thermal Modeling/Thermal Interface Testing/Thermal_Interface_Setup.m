@@ -1,7 +1,7 @@
 %% HT06/07 Thermal Interface Testing Simulink Setup Script
 
 % load finInterfaceTest.mat
-load Sample3Test1.mat;
+load Sample4Test3.mat;
 
 timeEnd = time(end);
 
@@ -17,7 +17,7 @@ alSubstrateLength = 0.0385;
 alSubstrateArea = alSubstrateLength*alSubstrateWidth; % m^2
 
 % TUNED VARIABLE
-thermalInterfaceResFlux = 0.0030; % K-m^2/W
+thermalInterfaceResFlux = 0.004; % K-m^2/W
 thermalInterfaceRes = thermalInterfaceResFlux/alSubstrateArea;
 
 capDiameter = 0.0265; % m

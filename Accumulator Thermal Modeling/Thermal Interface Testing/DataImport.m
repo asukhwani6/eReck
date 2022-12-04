@@ -1,5 +1,5 @@
 clear
-A = readmatrix("Sample4Test3.xlsx");
+A = readmatrix("Sample3Test3.xlsx");
 
 time = A(:,1);
 T1 = A(:,2);
